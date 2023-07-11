@@ -55,7 +55,7 @@ public class RequestServiceImpl : RequestService
                 request.IdDepartmentNavigation.Describe,
                 request.IdDepartmentNavigation.Address,
                 request.IdDepartmentNavigation.Status,
-
+                
             },
             idHandleNavigation = new {
                 request.IdComplainNavigation.Id,
