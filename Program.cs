@@ -1,9 +1,13 @@
+using DemoSession2_Paypal.Converters;
 using DuAnTruongTim.Models;
 using DuAnTruongTim.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(option =>
+{
+    option.JsonSerializerOptions.Converters.Add(new DateConverter());
+});
 builder.Services.AddCors();
 
 var connectionString = builder.Configuration["ConnectionStrings:DefaultConnection"];
@@ -18,6 +22,7 @@ var app = builder.Build();
 app.MapControllers();
 app.UseCors(builder => builder .AllowAnyHeader() .AllowAnyMethod() .SetIsOriginAllowed((host) => true) .AllowCredentials() );
 app.UseStaticFiles();
+
 app.Run();
 
 

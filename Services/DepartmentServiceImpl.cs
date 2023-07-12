@@ -10,6 +10,20 @@ public class DepartmentServiceImpl : DepartmentService
     {
         db = _db;
     }
+
+    public bool CreatedDeparment(Department department)
+    {
+        try
+        {
+            db.Departments.Add(department);
+            return db.SaveChanges() > 0;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public async Task<dynamic> getAllDepartment()
     {
         return await db.Departments.Select(department => new

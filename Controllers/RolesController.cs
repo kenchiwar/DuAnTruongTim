@@ -6,18 +6,26 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DuAnTruongTim.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using DuAnTruongTim.Services;
 
 namespace DuAnTruongTim.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Roles")]
     [ApiController]
     public class RolesController : ControllerBase
     {
         private readonly CheckQlgiaoVuContext _context;
+        private RoleService roleService;
 
-        public RolesController(CheckQlgiaoVuContext context)
+        public RolesController(
+            CheckQlgiaoVuContext context,
+            RoleService _roleService
+            )
         {
             _context = context;
+            roleService = _roleService;
         }
 
         // GET: api/Roles
@@ -119,5 +127,30 @@ namespace DuAnTruongTim.Controllers
         {
             return (_context.Roles?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        [Consumes("multipart/form-data")]
+        [Produces("application/json")]
+        [HttpPost("created")]
+        public IActionResult CreatedRole(string strRole)
+        {
+            try
+            {
+                var role = JsonConvert.DeserializeObject<Role>(strRole, new IsoDateTimeConverter
+                {
+                    DateTimeFormat = "dd/mm/yy"
+                });
+                bool result = roleService.CreatedRole(role);
+                return Ok(new
+                {
+                    Result = result,
+                });
+            }
+            catch
+            {
+                return BadRequest(strRole);
+            }
+        }
     }
+
+    
 }

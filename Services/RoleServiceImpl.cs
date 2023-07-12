@@ -11,6 +11,20 @@ public class RoleServiceImpl : RoleService
     {
         db = _Db;
     }
+
+    public bool CreatedRole(Role role)
+    {
+        try
+        {
+            db.Roles.Add(role);
+            return db.SaveChanges() > 0;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
     public async Task<dynamic> getAllRole()
     {
         return await db.Roles.Select(role => new

@@ -6,18 +6,26 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DuAnTruongTim.Models;
+using Newtonsoft.Json;
+using System.Runtime.Serialization;
+using Newtonsoft.Json.Converters;
+using DuAnTruongTim.Services;
 
 namespace DuAnTruongTim.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    [Route("api/Departments")]
+    //[ApiController]
     public class DepartmentsController : ControllerBase
     {
-        private readonly CheckQlgiaoVuContext _context;
-
-        public DepartmentsController(CheckQlgiaoVuContext context)
+        private CheckQlgiaoVuContext _context;
+        private DepartmentService departmentService;
+        public DepartmentsController(
+            CheckQlgiaoVuContext context,
+            DepartmentService _departmentService
+            )
         {
             _context = context;
+            departmentService= _departmentService;
         }
 
         // GET: api/Departments
@@ -82,18 +90,18 @@ namespace DuAnTruongTim.Controllers
 
         // POST: api/Departments
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Department>> PostDepartment(Department department)
-        {
-          if (_context.Departments == null)
-          {
-              return Problem("Entity set 'CheckQlgiaoVuContext.Departments'  is null.");
-          }
-            _context.Departments.Add(department);
-            await _context.SaveChangesAsync();
+        //[HttpPost]
+        //public async Task<ActionResult<Department>> PostDepartment(Department department)
+        //{
+        //    if (_context.Departments == null)
+        //    {
+        //        return Problem("Entity set 'CheckQlgiaoVuContext.Departments'  is null.");
+        //    }
+        //    _context.Departments.Add(department);
+        //    await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetDepartment", new { id = department.Id }, department);
-        }
+        //    return CreatedAtAction("GetDepartment", new { id = department.Id }, department);
+        //}
 
         // DELETE: api/Departments/5
         [HttpDelete("{id}")]
@@ -119,5 +127,39 @@ namespace DuAnTruongTim.Controllers
         {
             return (_context.Departments?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        [Consumes("multipart/form-data")]
+        [Produces("application/json")]
+        [HttpPost("created")]
+        public IActionResult CreatedDepartment(string strDepartment)
+        {
+            try
+            {
+                var department = JsonConvert.DeserializeObject<Department>(strDepartment, new IsoDateTimeConverter
+                {
+                    DateTimeFormat = "dd/MM/yyyy"
+                });
+                bool result = departmentService.CreatedDeparment(department);
+                return Ok(new
+                {
+                    Result = result,
+                });
+            }
+            catch
+            {
+                return BadRequest();
+            }
+        }
+
+        
+        //[HttpGet]
+        //[Route("getDepartment")]
+        //public async Task<dynamic> getDepartment()
+        //{
+           
+        //        var department = await departmentService.getAllDepartment();
+        //        return department;
+           
+        //}
     }
 }
