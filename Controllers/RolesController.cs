@@ -30,13 +30,13 @@ namespace DuAnTruongTim.Controllers
 
         // GET: api/Roles
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Role>>> GetRoles()
+        public async Task<IActionResult> GetRoles()
         {
           if (_context.Roles == null)
           {
               return NotFound();
           }
-            return await _context.Roles.ToListAsync();
+            return Ok(await roleService.getAllRole());
         }
 
         // GET: api/Roles/5

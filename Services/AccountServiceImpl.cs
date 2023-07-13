@@ -90,4 +90,14 @@ public class AccountServiceImpl : AccountService
 
         }).ToListAsync();
     }
+    
+    public async Task<bool> checkEmailExists(string email,int? id)
+
+    {
+        
+        return id==null?await db.Accounts.AnyAsync(account=>account.Username.Equals(email) )
+            :await db.Accounts.AnyAsync(account=>account.Username.Equals(email) && account.Id!=id) ;
+    }
+   
+
 }
