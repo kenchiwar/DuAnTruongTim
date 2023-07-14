@@ -13,7 +13,7 @@ using DuAnTruongTim.Services;
 namespace DuAnTruongTim.Controllers
 {
     [Route("api/Roles")]
-    [ApiController]
+    //[ApiController]
     public class RolesController : ControllerBase
     {
         private readonly CheckQlgiaoVuContext _context;
@@ -139,7 +139,30 @@ namespace DuAnTruongTim.Controllers
                 {
                     DateTimeFormat = "dd/mm/yy"
                 });
-                bool result = roleService.CreatedRole(role);
+                bool result = roleService.createdRole(role);
+                return Ok(new
+                {
+                    Result = result,
+                });
+            }
+            catch
+            {
+                return BadRequest(strRole);
+            }
+        }
+
+        [Consumes("multipart/form-data")]
+        [Produces("application/json")]
+        [HttpPut("updated")]
+        public IActionResult UpdatedRole(string strRole)
+        {
+            try
+            {
+                var role = JsonConvert.DeserializeObject<Role>(strRole, new IsoDateTimeConverter
+                {
+                    DateTimeFormat = "dd/MM/yyyy"
+                });
+                bool result = roleService.updateRole(role);
                 return Ok(new
                 {
                     Result = result,

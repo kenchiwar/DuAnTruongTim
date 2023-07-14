@@ -151,15 +151,26 @@ namespace DuAnTruongTim.Controllers
             }
         }
 
+        [Consumes("multipart/form-data")]
+        [Produces("application/json")]
+        [HttpPut("updated")]
+        public IActionResult UpdatedDepartment(string strDepartment)
+        {
+            try
+            {
+                var department = JsonConvert.DeserializeObject<Department>(strDepartment, new IsoDateTimeConverter
+                {
+                    DateTimeFormat = "dd/MM/yyyy"
+                });
+
+                bool result = departmentService.UpdateDepartment(department);
+                return Ok(new
+                {
+                    Result = result,
+                });
+            }
+            catch { return BadRequest(); }
+        }
         
-        //[HttpGet]
-        //[Route("getDepartment")]
-        //public async Task<dynamic> getDepartment()
-        //{
-           
-        //        var department = await departmentService.getAllDepartment();
-        //        return department;
-           
-        //}
     }
 }

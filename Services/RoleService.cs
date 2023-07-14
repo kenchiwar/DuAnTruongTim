@@ -5,5 +5,6 @@ namespace DuAnTruongTim.Services;
 public interface RoleService
 {
     public Task<dynamic> getAllRole();
-    public bool CreatedRole(Role role);
+    public bool createdRole(Role role);
+    public bool updateRole(Role role);
 }
