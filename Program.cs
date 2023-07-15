@@ -1,4 +1,5 @@
 using DemoSession2_Paypal.Converters;
+using DuAnTruongTim.Middleware;
 using DuAnTruongTim.Models;
 using DuAnTruongTim.Services;
 using Microsoft.EntityFrameworkCore;
@@ -17,7 +18,7 @@ builder.Services.AddScoped<DepartmentService, DepartmentServiceImpl>();
 builder.Services.AddScoped<RequestService, RequestServiceImpl>();
 builder.Services.AddScoped<RoleClaimService, RoleClaimServiceImpl>();
 builder.Services.AddScoped<RoleService, RoleServiceImpl>();
-
+builder.Services.AddScoped<AuthorizeAccount>();
 var app = builder.Build();
 app.MapControllers();
 app.UseCors(builder => builder .AllowAnyHeader() .AllowAnyMethod() .SetIsOriginAllowed((host) => true) .AllowCredentials() );

@@ -27,35 +27,41 @@ public class RoleServiceImpl : RoleService
 
     public async Task<dynamic> getAllRole()
     {
+
+        //return await db.Roles.Select(role => new
+        //{
+        //    id = role.Id,
+        //    name = role.Name,
+        //    describe = role.Describe,
+
+        //    accounts = role.Accounts.Select(account => new {
+        //        id = account.Id,
+        //        username = account.Username,
+        //        password = account.Password,
+        //        idRole = account.IdRole,
+        //        idDepartment = account.IdDepartment,
+        //        fullname = account.Fullname,
+        //        emailaddress = account.Emailaddress,
+        //        phonenumber = account.Phonenumber,
+        //        address = account.Address,
+        //        citizenidentification = account.Citizenidentification,
+        //        dateofbirth = account.Dateofbirth,
+        //        sex = account.Sex,
+        //        status = account.Status,
+        //        _class = account.Class,
+        //        schoolyear = account.Schoolyear,
+        //        degree = account.Degree,
+        //        academicrank = account.Academicrank,
+        //        role = account.IdRoleNavigation,
+        //        department = account.IdDepartmentNavigation,
+        //    }),
+        //}).ToListAsync();
         return await db.Roles.Select(role => new
         {
             id = role.Id,
-            name = role.Name,
-            describe = role.Describe,
-
-            accounts = role.Accounts.Select(account => new {
-                id = account.Id,
-                username = account.Username,
-                password = account.Password,
-                idRole = account.IdRole,
-                idDepartment = account.IdDepartment,
-                fullname = account.Fullname,
-                emailaddress = account.Emailaddress,
-                phonenumber = account.Phonenumber,
-                address = account.Address,
-                citizenidentification = account.Citizenidentification,
-                dateofbirth = account.Dateofbirth,
-                sex = account.Sex,
-                status = account.Status,
-                _class = account.Class,
-                schoolyear = account.Schoolyear,
-                degree = account.Degree,
-                academicrank = account.Academicrank,
-                role = account.IdRoleNavigation,
-                department = account.IdDepartmentNavigation,
-            }),
+           name = role.Name,
+          describe = role.Describe,
         }).ToListAsync();
-
     }
 
     public bool updateRole(Role role)

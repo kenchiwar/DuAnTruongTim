@@ -475,3 +475,12 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# Ignore all image files
+*.jpg
+*.png
+*.gif
+*.svg
+*.bmp
+*.ico
+*.jpeg

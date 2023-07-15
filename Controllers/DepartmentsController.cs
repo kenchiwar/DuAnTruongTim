@@ -30,13 +30,19 @@ namespace DuAnTruongTim.Controllers
 
         // GET: api/Departments
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Department>>> GetDepartments()
+        [Produces("application/json")]
+        public async Task<IActionResult> GetDepartments()
         {
           if (_context.Departments == null)
           {
               return NotFound();
           }
+<<<<<<< HEAD
             return await _context.Departments.AsNoTracking().ToListAsync();
+=======
+            
+            return Ok(await  departmentService.getAllDepartment());
+>>>>>>> 0ae4ab1522a832e53f74dd72f6baff50844bb15e
         }
 
         // GET: api/Departments/5
