@@ -12,7 +12,7 @@ public class RoleServiceImpl : RoleService
         db = _Db;
     }
 
-    public bool CreatedRole(Role role)
+    public bool createdRole(Role role)
     {
         try
         {
@@ -62,5 +62,15 @@ public class RoleServiceImpl : RoleService
            name = role.Name,
           describe = role.Describe,
         }).ToListAsync();
+    }
+
+    public bool updateRole(Role role)
+    {
+        try
+        {
+            db.Entry(role).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            return db.SaveChanges() > 0;
+        }
+        catch { return false; }
     }
 }

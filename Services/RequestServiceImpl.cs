@@ -6,10 +6,22 @@ namespace DuAnTruongTim.Services;
 public class RequestServiceImpl : RequestService
 {
     private CheckQlgiaoVuContext db;
+    
     public RequestServiceImpl(CheckQlgiaoVuContext _Db)
     {
         db = _Db;
     }
+
+    public bool createdRequest(Requet request)
+    {
+        try
+        {
+            db.Requets.Add(request);
+            return db.SaveChanges() >0 ;
+        }
+        catch { return false; }
+    }
+
     public async Task<dynamic> getAllRequest()
     {
         return await db.Requets.Select(request => new
@@ -101,5 +113,18 @@ public class RequestServiceImpl : RequestService
                 
             })
         }).ToListAsync();
+    }
+
+    public bool updatedRequest(Requet request)
+    {
+        try
+        {
+            db.Entry(request).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            return db.SaveChanges() >0;
+        }
+        catch
+        {
+            return false;
+        }
     }
 }

@@ -6,18 +6,26 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DuAnTruongTim.Models;
+using Newtonsoft.Json;
+using DuAnTruongTim.Services;
+using Newtonsoft.Json.Converters;
 
 namespace DuAnTruongTim.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    //[ApiController]
     public class RequetsController : ControllerBase
     {
         private readonly CheckQlgiaoVuContext _context;
+        private RequestService requestService;
 
-        public RequetsController(CheckQlgiaoVuContext context)
+        public RequetsController(
+            CheckQlgiaoVuContext context,
+            RequestService _requestService
+            )
         {
             _context = context;
+            requestService = _requestService;
         }
 
         // GET: api/Requets
@@ -118,6 +126,46 @@ namespace DuAnTruongTim.Controllers
         private bool RequetExists(int id)
         {
             return (_context.Requets?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        [Consumes("multipart/form-data")]
+        [Produces("application/json")]
+        [HttpPost("created")]
+        public IActionResult CreatedRequst(string strRequest)
+        {
+            try
+            {
+                var request = JsonConvert.DeserializeObject<Requet>(strRequest, new IsoDateTimeConverter
+                {
+                    DateTimeFormat = "dd/MM/yyyy"
+                });
+                bool result = requestService.createdRequest(request);
+                return Ok(new
+                {
+                    Result = result
+                });
+            }
+            catch { return BadRequest(); }
+        }
+
+        [Consumes("multipart/form-data")]
+        [Produces("application/json")]
+        [HttpPut("update")]
+        public IActionResult UpdateRequst(string strRequest)
+        {
+            try
+            {
+                var request = JsonConvert.DeserializeObject<Requet>(strRequest, new IsoDateTimeConverter
+                {
+                    DateTimeFormat = "dd/MM/yyyy"
+                });
+                bool result = requestService.updatedRequest(request);
+                return Ok(new
+                {
+                    Result = result
+                });
+            }
+            catch { return BadRequest(); }
         }
     }
 }

@@ -73,4 +73,17 @@ public class DepartmentServiceImpl : DepartmentService
             //})
         }).ToListAsync();
     }
+
+    public bool UpdateDepartment(Department department)
+    {
+        try
+        {
+            db.Entry(department).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            return db.SaveChanges() > 0;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 }
