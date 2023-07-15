@@ -32,28 +32,25 @@ public partial class CheckQlgiaoVuContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         base.OnConfiguring(optionsBuilder);
-     
     }
-/*#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.*/
-       
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Account>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Account__3214EC07F1D105EC");
+            entity.HasKey(e => e.Id).HasName("PK__Account__3214EC07FA541DE1");
 
             entity.ToTable("Account");
 
             entity.Property(e => e.Academicrank).HasMaxLength(50);
             entity.Property(e => e.Address).HasMaxLength(50);
-            entity.Property(e => e.Citizenidentification).HasMaxLength(50);
+            entity.Property(e => e.Citizenidentification).HasMaxLength(150);
             entity.Property(e => e.Class).HasMaxLength(50);
             entity.Property(e => e.Dateofbirth).HasColumnType("date");
             entity.Property(e => e.Degree).HasMaxLength(50);
             entity.Property(e => e.Emailaddress).HasMaxLength(50);
             entity.Property(e => e.Fullname).HasMaxLength(50);
-            entity.Property(e => e.Password).HasMaxLength(50);
+            entity.Property(e => e.Password).HasMaxLength(150);
             entity.Property(e => e.Phonenumber).HasMaxLength(50);
             entity.Property(e => e.Role).HasMaxLength(50);
             entity.Property(e => e.Schoolyear).HasMaxLength(50);
@@ -72,7 +69,7 @@ public partial class CheckQlgiaoVuContext : DbContext
 
         modelBuilder.Entity<Department>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Departme__3214EC07FB7B70E4");
+            entity.HasKey(e => e.Id).HasName("PK__Departme__3214EC070690F445");
 
             entity.ToTable("Department");
 
@@ -83,7 +80,7 @@ public partial class CheckQlgiaoVuContext : DbContext
 
         modelBuilder.Entity<RequestFile>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__RequestF__3214EC077B8DB485");
+            entity.HasKey(e => e.Id).HasName("PK__RequestF__3214EC0731BD4125");
 
             entity.ToTable("RequestFile");
 
@@ -97,7 +94,7 @@ public partial class CheckQlgiaoVuContext : DbContext
 
         modelBuilder.Entity<Requet>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Requets__3214EC079CA7F8D7");
+            entity.HasKey(e => e.Id).HasName("PK__Requets__3214EC07E4699005");
 
             entity.Property(e => e.Enddate).HasColumnType("date");
             entity.Property(e => e.Sentdate).HasColumnType("date");
@@ -120,7 +117,7 @@ public partial class CheckQlgiaoVuContext : DbContext
 
         modelBuilder.Entity<Requetsdetailed>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Requetsd__3214EC07D5DFA670");
+            entity.HasKey(e => e.Id).HasName("PK__Requetsd__3214EC079861C003");
 
             entity.ToTable("Requetsdetailed");
 
@@ -137,7 +134,7 @@ public partial class CheckQlgiaoVuContext : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Role__3214EC077AA2FFC9");
+            entity.HasKey(e => e.Id).HasName("PK__Role__3214EC0762687E5F");
 
             entity.ToTable("Role");
 
@@ -147,7 +144,7 @@ public partial class CheckQlgiaoVuContext : DbContext
 
         modelBuilder.Entity<RoleClaim>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__RoleClai__3214EC07CAC9D00C");
+            entity.HasKey(e => e.Id).HasName("PK__RoleClai__3214EC07AE7EC214");
 
             entity.ToTable("RoleClaim");
 
@@ -167,11 +164,11 @@ public partial class CheckQlgiaoVuContext : DbContext
                         .HasConstraintName("FK_ManageRoleClaim_RoleClaim_"),
                     j =>
                     {
-                        j.HasKey("IdRoleClaim", "IdAccount").HasName("PK__ManageRo__DA828200DA6BF5CC");
+                        j.HasKey("IdRoleClaim", "IdAccount").HasName("PK__ManageRo__DA82820053CE2C5F");
                         j.ToTable("ManageRoleClaim");
                     });
         });
-                base.OnModelCreating(modelBuilder);
+        base.OnModelCreating(modelBuilder);
         OnModelCreatingPartial(modelBuilder);
     }
 

@@ -10,6 +10,8 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using DuAnTruongTim.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
+using DuAnTruongTim.Middleware;
+
 
 namespace DuAnTruongTim.Controllers
 {
@@ -29,31 +31,35 @@ namespace DuAnTruongTim.Controllers
 
         // GET: api/Accounts
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Account>>> GetAccounts()
+        public async Task<ActionResult<IEnumerable<dynamic>>> GetAccounts()
         {
             if (_context.Accounts == null)
             {
                 return NotFound();
             }
-            return await _context.Accounts.ToListAsync();
+            return await _accountService.getAllAccount();
         }
 
         // GET: api/Accounts/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Account>> GetAccount(int id)
+        [AuthorizeAccount]
+        public async Task<ActionResult<dynamic>> GetAccount(int id)
         {
-            if (_context.Accounts == null)
-            {
-                return NotFound();
-            }
-            var account = await _context.Accounts.FindAsync(id);
+            var accountLogin = _accountService.getAccountLogin();
+            
+            //Kiêm tra coi đủ phầm quyền ko 
+           if (!(accountLogin.IdRole<=2 || accountLogin.Id==id))    return Unauthorized();
+            
 
-            if (account == null)
-            {
-                return NotFound();
-            }
+            
+           var account = await _accountService.GetAccount(id);
 
-            return account;
+            //if (account == null)
+            //{
+            //    return NotFound();
+            //}
+
+            return account!=null?Ok(account):NotFound();
         }
 
         // PUT: api/Accounts/5
