@@ -14,7 +14,7 @@ using DuAnTruongTim.Services;
 namespace DuAnTruongTim.Controllers
 {
     [Route("api/Departments")]
-    //[ApiController]
+    [ApiController]
     public class DepartmentsController : ControllerBase
     {
         private CheckQlgiaoVuContext _context;
@@ -36,7 +36,7 @@ namespace DuAnTruongTim.Controllers
           {
               return NotFound();
           }
-            return await _context.Departments.ToListAsync();
+            return await _context.Departments.AsNoTracking().ToListAsync();
         }
 
         // GET: api/Departments/5
@@ -126,6 +126,28 @@ namespace DuAnTruongTim.Controllers
         private bool DepartmentExists(int id)
         {
             return (_context.Departments?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        [Produces("application/json")]
+        [HttpGet("getDepartment")]
+        public IActionResult GetDepartment()
+        {
+            try
+            {
+                return Ok(departmentService.getAllDepartment());
+            }
+            catch { return BadRequest(); }
+        }
+
+        [Produces("application/json")]
+        [HttpGet("getDepartmentById/{id}")]
+        public IActionResult GetDepartmentById(int id)
+        {
+            try
+            {
+                return Ok(departmentService.getDepartmentById(id));
+            }
+            catch { return BadRequest(); }
         }
 
         [Consumes("multipart/form-data")]

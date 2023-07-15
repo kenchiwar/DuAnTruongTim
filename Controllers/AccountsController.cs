@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DuAnTruongTim.Models;
+using DuAnTruongTim.Services;
 
 namespace DuAnTruongTim.Controllers
 {
@@ -14,10 +15,15 @@ namespace DuAnTruongTim.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly CheckQlgiaoVuContext _context;
+        private AccountService accountService;
 
-        public AccountsController(CheckQlgiaoVuContext context)
+        public AccountsController(
+            CheckQlgiaoVuContext context,
+            AccountService _accountService
+            )
         {
             _context = context;
+            accountService= _accountService;
         }
 
         // GET: api/Accounts
@@ -118,6 +124,16 @@ namespace DuAnTruongTim.Controllers
         private bool AccountExists(int id)
         {
             return (_context.Accounts?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        [HttpGet("getAccount")]
+        public IActionResult getAccount()
+        {
+            try
+            {
+                return Ok(accountService.getAccount());
+            }
+            catch { return BadRequest(); }
         }
     }
 }

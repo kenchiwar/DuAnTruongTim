@@ -12,7 +12,7 @@ using Newtonsoft.Json.Converters;
 
 namespace DuAnTruongTim.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/Requets")]
     //[ApiController]
     public class RequetsController : ControllerBase
     {
@@ -126,6 +126,28 @@ namespace DuAnTruongTim.Controllers
         private bool RequetExists(int id)
         {
             return (_context.Requets?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        [Produces("application/json")]
+        [HttpGet("getRequest")]
+        public IActionResult GetRequest()
+        {
+            try
+            {
+                return Ok(requestService.getRequest());
+            }
+            catch { return BadRequest(); }
+        }
+
+        [Produces("application/json")]
+        [HttpGet("getRequestById/{id}")]
+        public IActionResult GetRequestById(int id)
+        {
+            try
+            {
+                return Ok(requestService.getRequestById(id));
+            }
+            catch { return BadRequest(); }
         }
 
         [Consumes("multipart/form-data")]
