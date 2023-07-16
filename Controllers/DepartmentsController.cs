@@ -37,12 +37,10 @@ namespace DuAnTruongTim.Controllers
           {
               return NotFound();
           }
-<<<<<<< HEAD
-            return await _context.Departments.AsNoTracking().ToListAsync();
-=======
+
             
-            return Ok(await  departmentService.getAllDepartment());
->>>>>>> 0ae4ab1522a832e53f74dd72f6baff50844bb15e
+            return Ok( departmentService.getAllDepartment());
+
         }
 
         // GET: api/Departments/5

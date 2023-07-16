@@ -71,7 +71,7 @@ public class DepartmentServiceImpl : DepartmentService
             //    departmentName = request.IdDepartmentNavigation,
             //    handleUsername = request.IdHandleNavigation,
             //})
-<<<<<<< HEAD
+
         }).ToList();
     }
 
@@ -85,9 +85,9 @@ public class DepartmentServiceImpl : DepartmentService
             address = department.Address,
             status = department.Status,
         }).FirstOrDefault();
-=======
-        }).ToListAsync();
->>>>>>> 0ae4ab1522a832e53f74dd72f6baff50844bb15e
+
+       
+
     }
 
     public bool UpdateDepartment(Department department)
