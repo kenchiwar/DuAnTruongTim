@@ -24,9 +24,9 @@ public class DepartmentServiceImpl : DepartmentService
         }
     }
 
-    public async Task<dynamic> getAllDepartment()
+    public dynamic getAllDepartment()
     {
-        return await db.Departments.Select(department => new
+        return db.Departments.Select(department => new
         {
             id = department.Id,
             tenDepartment = department.TenDepartment,
@@ -71,7 +71,23 @@ public class DepartmentServiceImpl : DepartmentService
             //    departmentName = request.IdDepartmentNavigation,
             //    handleUsername = request.IdHandleNavigation,
             //})
+<<<<<<< HEAD
+        }).ToList();
+    }
+
+    public dynamic getDepartmentById(int id)
+    {
+        return db.Departments.Where(de => de.Id == id).Select(department => new
+        {
+            id = department.Id,
+            tenDepartment = department.TenDepartment,
+            describe = department.Describe,
+            address = department.Address,
+            status = department.Status,
+        }).FirstOrDefault();
+=======
         }).ToListAsync();
+>>>>>>> 0ae4ab1522a832e53f74dd72f6baff50844bb15e
     }
 
     public bool UpdateDepartment(Department department)

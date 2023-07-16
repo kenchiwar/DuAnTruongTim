@@ -4,7 +4,8 @@ namespace DuAnTruongTim.Services;
 
 public interface DepartmentService
 {
-    public Task<dynamic> getAllDepartment();
+    public dynamic getAllDepartment();
+    public dynamic getDepartmentById(int id);
     public bool CreatedDeparment(Department department);
     public bool UpdateDepartment(Department department);
 }

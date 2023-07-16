@@ -1,7 +1,10 @@
 ﻿using DuAnTruongTim.Models;
+using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 
 namespace DuAnTruongTim.Services;
+
+
 
 public class RequestServiceImpl : RequestService
 {
@@ -113,6 +116,40 @@ public class RequestServiceImpl : RequestService
                 
             })
         }).ToListAsync();
+    }
+
+    public dynamic getRequest()
+    {
+        return db.Requets.Select(request => new
+        {
+            id = request.Id,
+            idComplain = request.IdComplain,
+            idDepartment = request.IdDepartment,
+            idHandle = request.IdHandle,
+            title = request.Title,
+            status = request.Status,
+            level = request.Level,
+            sentDate = request.Sentdate,
+            endDate = request.Enddate,
+            priority = request.Priority,
+        }).ToList();
+    }
+
+    public dynamic getRequestById(int id)
+    {
+        return db.Requets.Where(request => request.Id == id).Select(request => new
+        {
+            id = request.Id,
+            idComplain = request.IdComplain,
+            idDepartment = request.IdDepartment,
+            idHandle = request.IdHandle,
+            title = request.Title,
+            status = request.Status,
+            level = request.Level,
+            sentDate = request.Sentdate,
+            endDate = request.Enddate,
+            priority = request.Priority,
+        }).SingleOrDefault();
     }
 
     public bool updatedRequest(Requet request)

@@ -12,6 +12,32 @@ public class AccountServiceImpl : AccountService
     {
         db = _db;
     }
+
+    public dynamic getAccount()
+    {
+        return db.Accounts.Select(account => new
+        {
+            id = account.Id,
+            username = account.Username,
+            password = account.Password,
+            idRole = account.IdRole,
+            idDepartment = account.IdDepartment,
+            fullname = account.Fullname,
+            emailaddress = account.Emailaddress,
+            phonenumber = account.Phonenumber,
+            address = account.Address,
+            citizenidentification = account.Citizenidentification,
+            dateofbirth = account.Dateofbirth,
+            sex = account.Sex,
+            status = account.Status,
+            _class = account.Class,
+            schoolyear = account.Schoolyear,
+            degree = account.Degree,
+            academicrank = account.Academicrank,
+            role = account.Role,
+        }).ToList();
+    }
+
     public async Task<dynamic> getAllAccount()
     {
         var account = await db.Accounts.AsNoTracking().Include(a=>a.IdDepartmentNavigation).Include(a=>a.IdRoleNavigation).ToListAsync<Account>();
