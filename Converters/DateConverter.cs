@@ -6,7 +6,7 @@ using System.Text.Json.Serialization;
 namespace DemoSession2_Paypal.Converters;
 public class DateConverter : JsonConverter<DateTime>
 {
-    private string formatDate = "MM/dd/yyyy";
+    private string formatDate = "yyyy-MM-dd";
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         return DateTime.ParseExact(reader.GetString(), formatDate, CultureInfo.InvariantCulture);

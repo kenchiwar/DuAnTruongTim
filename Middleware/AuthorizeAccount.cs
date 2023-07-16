@@ -16,8 +16,12 @@ public class AuthorizeAccount : Attribute, IAuthorizationFilter
     {
         //if (account.getAccountLogin() == null)
         //{
-        //   context.Result = new UnauthorizedResult();;
+        //   context.Result = new UnauthorizedResult();;]
         //}
+        string sessionId = context.HttpContext.Request.Headers["session-id"];
+
+// Sử dụng sessionId để truy xuất thông tin phiên làm việc
+     
 
     }
 }

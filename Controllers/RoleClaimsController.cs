@@ -22,13 +22,24 @@ namespace DuAnTruongTim.Controllers
 
         // GET: api/RoleClaims
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RoleClaim>>> GetRoleClaims()
+        public async Task<ActionResult<IEnumerable<dynamic>>> GetRoleClaims()
         {
           if (_context.RoleClaims == null)
           {
               return NotFound();
+
           }
-            return await _context.RoleClaims.ToListAsync();
+          
+       
+          
+                        
+            return await _context.RoleClaims.Select(roleClaim => new {
+                id = roleClaim.Id,
+            name = roleClaim.Name,
+            describe = roleClaim.Describe,
+            claim = roleClaim.Claim,
+
+          }).ToListAsync();;
         }
 
         // GET: api/RoleClaims/5

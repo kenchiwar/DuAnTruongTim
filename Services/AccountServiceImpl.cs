@@ -145,12 +145,16 @@ public class AccountServiceImpl : AccountService
                 account.IdRoleNavigation.Name,
                 account.IdRoleNavigation.Describe,
             },
-            idRoleClaim = account.IdRoleClaims.Select(idRoleClaim => new
+            idRoleClaims = account.IdRoleClaims.Select(idRoleClaim => new
             {
-                id = idRoleClaim.Id,
-                name = idRoleClaim.Name,
-                describe = idRoleClaim.Describe,
-                claim = idRoleClaim.Claim,
+               
+
+                      id = idRoleClaim.Id,
+            name = idRoleClaim.Name,
+            describe = idRoleClaim.Describe,
+            claim = idRoleClaim.Claim,
+
+
             }),
         };
        //return account.(account => new
@@ -193,7 +197,91 @@ public class AccountServiceImpl : AccountService
 
     public dynamic GetDynamicDetail(Account? account)
     {
-        throw new NotImplementedException();
+         if (account == null)
+        {
+            return null ; 
+        }
+        return new
+        {
+            id = account.Id,
+            username = account.Username,
+            password = "",
+            idRole = account.IdRole,
+            idDepartment = account.IdDepartment,
+            fullname = account.Fullname,
+            emailaddress = account.Emailaddress,
+            phonenumber = account.Phonenumber,
+            address = account.Address,
+            citizenidentification = account.Citizenidentification,
+            dateofbirth = account.Dateofbirth,
+            sex = account.Sex,
+            status = account.Status,
+
+            Class = account.Class,
+            schoolyear = account.Schoolyear,
+            degree = account.Degree,
+            academicrank = account.Academicrank,
+            role = account.Role,
+            idDepartmentNavigation = new
+            {
+                account.IdDepartmentNavigation.Id,
+                account.IdDepartmentNavigation.TenDepartment,
+                account.IdDepartmentNavigation.Describe,
+                account.IdDepartmentNavigation.Address,
+                account.IdDepartmentNavigation.Status,
+            },
+            idRoleNavigation = new
+            {
+                account.IdRoleNavigation.Id,
+                account.IdRoleNavigation.Name,
+                account.IdRoleNavigation.Describe,
+            },
+            idRoleClaims = account.IdRoleClaims.Select(idRoleClaim => new
+            {
+               
+
+                      id = idRoleClaim.Id,
+            name = idRoleClaim.Name,
+            describe = idRoleClaim.Describe,
+            claim = idRoleClaim.Claim,
+
+
+            }),
+
+            requetIdComplainNavigations = account.RequetIdComplainNavigations.Select(requestComplainNavigation => new
+            {
+
+                id = requestComplainNavigation.Id,
+                idComplain = requestComplainNavigation.IdComplain,
+                idDepartment = requestComplainNavigation.IdDepartment,
+                idHandle = requestComplainNavigation.IdHandle,
+                title = requestComplainNavigation.Title,
+                status = requestComplainNavigation.Status,
+                level = requestComplainNavigation.Level,
+                sentDate = requestComplainNavigation.Sentdate,
+                endDate = requestComplainNavigation.Enddate,
+                priority = requestComplainNavigation.Priority,
+            
+
+            }),
+            requetIdHandleNavigations = account.RequetIdHandleNavigations.Select(requestHandleNavigation => new
+            {
+                id = requestHandleNavigation.Id,
+                idComplain = requestHandleNavigation.IdComplain,
+                idDepartment = requestHandleNavigation.IdDepartment,
+                idHandle = requestHandleNavigation.IdHandle,
+                title = requestHandleNavigation.Title,
+                status = requestHandleNavigation.Status,
+                level = requestHandleNavigation.Level,
+                sentDate = requestHandleNavigation.Sentdate,
+                endDate = requestHandleNavigation.Enddate,
+                priority = requestHandleNavigation.Priority,
+              
+            }),
+
+
+
+        };
     }
 
     public dynamic GetDynamicList(List<Account?> DataAccount)
@@ -268,7 +356,7 @@ public class AccountServiceImpl : AccountService
             //    departmentName = requestHandleNavigation.IdDepartmentNavigation,
             //    handleUsername = requestHandleNavigation.IdHandleNavigation,
             //}),
-            //idRoleClaim = account.IdRoleClaims.Select(idRoleClaim => new
+            //idRoleClaims = account.IdRoleClaims.Select(idRoleClaim => new
             //{
             //    id = idRoleClaim.Id,
             //    name = idRoleClaim.Name,
@@ -294,6 +382,10 @@ public class AccountServiceImpl : AccountService
 
          //throw new NotImplementedException();
     }
-    
 
+    public async Task<dynamic> GetAccountDetail(int id)
+    {
+         var account = await db.Accounts.Include(a=>a.IdRoleNavigation).Include(a=>a.IdDepartmentNavigation).Include(a=>a.IdRoleClaims).Include(a=>a.RequetIdComplainNavigations).Include(a=>a.RequetIdHandleNavigations).AsNoTracking<Account>().FirstOrDefaultAsync(x=>x.Id == id);
+        return this.GetDynamicDetail(account) ;
+    }
 }
