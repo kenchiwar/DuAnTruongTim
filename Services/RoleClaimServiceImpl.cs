@@ -10,6 +10,17 @@ public class RoleClaimServiceImpl : RoleClaimService
     {
         db = _db;
     }
+
+    public bool CreatedRoleClaim(RoleClaim roleClaim)
+    {
+        try
+        {
+            db.RoleClaims.Add(roleClaim);
+            return db.SaveChanges() >0;
+        }
+        catch { return false; }
+    }
+
     public async Task<dynamic> getAllRoleClaim()
     {
         return await db.RoleClaims.Select(roleClaim => new
@@ -41,5 +52,15 @@ public class RoleClaimServiceImpl : RoleClaimService
                 department = account.IdDepartmentNavigation,
             }),
         }).ToListAsync();
+    }
+
+    public bool UpdatedRoleClaim(RoleClaim roleClaim)
+    {
+        try
+        {
+            db.Entry(roleClaim).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            return db.SaveChanges() > 0;
+        }
+        catch { return false; }
     }
 }

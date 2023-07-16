@@ -6,16 +6,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DuAnTruongTim.Models;
-<<<<<<< HEAD
-using DuAnTruongTim.Services;
-=======
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using DuAnTruongTim.Services;
 using Microsoft.AspNetCore.Http.HttpResults;
 using DuAnTruongTim.Middleware;
 
->>>>>>> 0ae4ab1522a832e53f74dd72f6baff50844bb15e
 
 namespace DuAnTruongTim.Controllers
 {
@@ -24,26 +20,13 @@ namespace DuAnTruongTim.Controllers
     public class AccountsController : ControllerBase
     {
         private readonly CheckQlgiaoVuContext _context;
-<<<<<<< HEAD
-        private AccountService accountService;
-
-        public AccountsController(
-            CheckQlgiaoVuContext context,
-            AccountService _accountService
-            )
-=======
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly AccountService _accountService;
         public AccountsController(CheckQlgiaoVuContext context,IWebHostEnvironment webHostEnvironment,AccountService accountService)
->>>>>>> 0ae4ab1522a832e53f74dd72f6baff50844bb15e
         {
             _accountService = accountService;
             _context = context;
-<<<<<<< HEAD
-            accountService= _accountService;
-=======
             _webHostEnvironment = webHostEnvironment;
->>>>>>> 0ae4ab1522a832e53f74dd72f6baff50844bb15e
         }
 
         // GET: api/Accounts
@@ -201,25 +184,12 @@ namespace DuAnTruongTim.Controllers
         {
             return (_context.Accounts?.Any(e => e.Id == id)).GetValueOrDefault();
         }
-<<<<<<< HEAD
-
-        [HttpGet("getAccount")]
-        public IActionResult getAccount()
-        {
-            try
-            {
-                return Ok(accountService.getAccount());
-            }
-            catch { return BadRequest(); }
-        }
-=======
         public  string GenerateRandomString(int length)
         {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         var random = new Random();
         return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
             }
->>>>>>> 0ae4ab1522a832e53f74dd72f6baff50844bb15e
     }
     
 }

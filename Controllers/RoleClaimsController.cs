@@ -6,18 +6,25 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DuAnTruongTim.Models;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using DuAnTruongTim.Services;
 
 namespace DuAnTruongTim.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
+    //[ApiController]
     public class RoleClaimsController : ControllerBase
     {
         private readonly CheckQlgiaoVuContext _context;
-
-        public RoleClaimsController(CheckQlgiaoVuContext context)
+        private RoleClaimService roleClaimService;
+        public RoleClaimsController(
+            CheckQlgiaoVuContext context,
+            RoleClaimService _roleClaimService
+            )
         {
             _context = context;
+            roleClaimService = _roleClaimService;
         }
 
         // GET: api/RoleClaims
@@ -96,28 +103,69 @@ namespace DuAnTruongTim.Controllers
         }
 
         // DELETE: api/RoleClaims/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRoleClaim(int id)
-        {
-            if (_context.RoleClaims == null)
-            {
-                return NotFound();
-            }
-            var roleClaim = await _context.RoleClaims.FindAsync(id);
-            if (roleClaim == null)
-            {
-                return NotFound();
-            }
+        //[HttpDelete("{id}")]
+        //public async Task<IActionResult> DeleteRoleClaim(int id)
+        //{
+        //    if (_context.RoleClaims == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    var roleClaim = await _context.RoleClaims.FindAsync(id);
+        //    if (roleClaim == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            _context.RoleClaims.Remove(roleClaim);
-            await _context.SaveChangesAsync();
+        //    _context.RoleClaims.Remove(roleClaim);
+        //    await _context.SaveChangesAsync();
 
-            return NoContent();
-        }
+        //    return NoContent();
+        //}
 
         private bool RoleClaimExists(int id)
         {
             return (_context.RoleClaims?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        [Consumes("multipart/form-data")]
+        [Produces("application/json")]
+        [HttpPost("created")]
+        public IActionResult Created(string strRoleClaim)
+        {
+            try
+            {
+                var roleClaim = JsonConvert.DeserializeObject<RoleClaim>(strRoleClaim, new IsoDateTimeConverter
+                            {
+                                DateTimeFormat = "dd/MM/yyyy"
+                            });
+               
+                bool result = roleClaimService.CreatedRoleClaim(roleClaim);
+                return Ok(new
+                {
+                    Result = result
+                });
+            }
+            catch { return BadRequest(); }
+        }
+
+        [Consumes("multipart/form-data")]
+        [Produces("application/json")]
+        [HttpPut("updated")]
+        public IActionResult Updated(string strRoleClaim)
+        {
+            try
+            {
+                var roleClaim = JsonConvert.DeserializeObject<RoleClaim>(strRoleClaim, new IsoDateTimeConverter
+                {
+                    DateTimeFormat = "dd/MM/yyyy"
+                });
+                bool result = roleClaimService.UpdatedRoleClaim(roleClaim);
+                return Ok(new
+                {
+                    Result = result
+                });
+            }
+            catch { return BadRequest(); }
         }
     }
 }
