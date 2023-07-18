@@ -2,15 +2,18 @@
 using DuAnTruongTim.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
+using Newtonsoft.Json;
 
 namespace DuAnTruongTim.Services;
 
 public class AccountServiceImpl : AccountService
 {
     private CheckQlgiaoVuContext db;
-    public AccountServiceImpl(CheckQlgiaoVuContext _db)
+    private  readonly IHttpContextAccessor _httpContext ;
+    public AccountServiceImpl(CheckQlgiaoVuContext _db,IHttpContextAccessor httpContext)
     {
         db = _db;
+       _httpContext = httpContext;
     }
 
     public dynamic getAccount()
@@ -394,12 +397,25 @@ public class AccountServiceImpl : AccountService
     }
     public Account? getAccountLogin()
     {
-        var account = new Account();
-        account.Id=3;
-        account.IdRole=1;
-        account.Username = "Fadasdad1234@gmail.com";
+        //var account = new Account();
+        //account.Id=3;
+        //account.IdRole=1;
+        //account.Username = "Fadasdad1234@gmail.com";
+        try
+        {
+              var a =  _httpContext.HttpContext?.Items["account"] as string;
        
-        return account; 
+           var account = JsonConvert.DeserializeObject<Account>(a);
+            return account??null;
+        }
+        catch (Exception)
+        {
+
+           return null;
+        }
+     
+        
+      
     }
     public async Task<dynamic> GetAccount(int Id)
     {
@@ -413,5 +429,24 @@ public class AccountServiceImpl : AccountService
     {
          var account = await db.Accounts.Include(a=>a.IdRoleNavigation).Include(a=>a.IdDepartmentNavigation).Include(a=>a.IdRoleClaims).Include(a=>a.RequetIdComplainNavigations).Include(a=>a.RequetIdHandleNavigations).AsNoTracking<Account>().FirstOrDefaultAsync(x=>x.Id == id);
         return this.GetDynamicDetail(account) ;
+    }
+        public async Task<dynamic?> login(string username , string password)
+    {
+        var account = await db.Accounts.Include(a=>a.IdRoleNavigation).Include(a=>a.IdDepartmentNavigation).Include(a=>a.IdRoleClaims).AsNoTracking<Account>().FirstOrDefaultAsync(x=>x.Username.Equals(username));
+        if(account ==null || account == new Account()) return null ;
+        if(! BCrypt.Net.BCrypt.Verify(password,account.Password)) return null ;
+        return this.GetDynamic(account) ;
+    }
+      
+    public async Task<bool> changePass(string username , string password)
+    {
+        var account = await db.Accounts.FirstOrDefaultAsync(a=>a.Username==username);
+        if (account != null)
+        {
+            account.Password = BCrypt.Net.BCrypt.HashPassword(password);
+              db.Accounts.Update(account);
+        return await db.SaveChangesAsync()>0;
+        }
+      return false;
     }
 }

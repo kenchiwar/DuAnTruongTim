@@ -1,5 +1,6 @@
 ﻿
 
+using Azure.Identity;
 using DuAnTruongTim.Models;
 
 namespace DuAnTruongTim.Services;
@@ -19,6 +20,7 @@ public interface AccountService
     public Account? getAccountLogin();
     //Lấy account dựa vào id ; 
     public Task<dynamic> GetAccount(int Id);
-
+     public Task<dynamic?> login(string username , string password);
+    public Task<bool> changePass(string username , string password);
 
 }

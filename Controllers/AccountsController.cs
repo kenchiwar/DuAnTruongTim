@@ -33,7 +33,7 @@ namespace DuAnTruongTim.Controllers
             _accountService = accountService;
             _context = context;
 
-            accountService= _accountService;
+          
 
             _webHostEnvironment = webHostEnvironment;
 
