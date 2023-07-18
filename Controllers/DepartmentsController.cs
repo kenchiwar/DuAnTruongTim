@@ -14,7 +14,7 @@ using DuAnTruongTim.Services;
 namespace DuAnTruongTim.Controllers
 {
     [Route("api/Departments")]
-    [ApiController]
+    //[ApiController]
     public class DepartmentsController : ControllerBase
     {
         private CheckQlgiaoVuContext _context;
@@ -30,16 +30,20 @@ namespace DuAnTruongTim.Controllers
 
         // GET: api/Departments
         [HttpGet]
-        [Produces("application/json")]
-        public async Task<IActionResult> GetDepartments()
+        
+        public async Task<ActionResult<IEnumerable<Department>>> GetDepartments()
         {
           if (_context.Departments == null)
           {
               return NotFound();
           }
 
+
             
             return Ok( departmentService.getAllDepartment());
+
+
+      
 
         }
 

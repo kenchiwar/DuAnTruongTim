@@ -77,16 +77,18 @@ public class DepartmentServiceImpl : DepartmentService
 
     public dynamic getDepartmentById(int id)
     {
-        return db.Departments.Where(de => de.Id == id).Select(department => new
+        return db.Departments.Where(department => department.Id == id).Select(department => new
         {
             id = department.Id,
             tenDepartment = department.TenDepartment,
             describe = department.Describe,
             address = department.Address,
             status = department.Status,
+
         }).FirstOrDefault();
 
        
+
 
     }
 

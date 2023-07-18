@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DuAnTruongTim.Models;
+
 using DuAnTruongTim.Services;
 
 using Microsoft.Extensions.Hosting;
@@ -25,16 +26,16 @@ namespace DuAnTruongTim.Controllers
     {
         private readonly CheckQlgiaoVuContext _context;
 
+
+      
+
+
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly AccountService _accountService;
         public AccountsController(CheckQlgiaoVuContext context,IWebHostEnvironment webHostEnvironment,AccountService accountService)
-
         {
             _accountService = accountService;
             _context = context;
-
-          
-
             _webHostEnvironment = webHostEnvironment;
 
         }
@@ -301,6 +302,7 @@ namespace DuAnTruongTim.Controllers
         }
 
 
+
         [HttpGet("getAccount")]
         public IActionResult getAccount()
         {
@@ -310,6 +312,7 @@ namespace DuAnTruongTim.Controllers
             }
             catch { return BadRequest(); }
         }
+
 
         public  string GenerateRandomString(int length)
         {

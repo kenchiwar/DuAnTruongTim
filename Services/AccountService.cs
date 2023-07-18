@@ -9,7 +9,10 @@ public interface AccountService
 {
     public Task<dynamic> getAllAccount();
 
+
     public dynamic getAccount();
+
+
 
     public Task<bool> checkEmailExists(string email,int? id );
     public Task<dynamic> GetAccountDetail(int id);
