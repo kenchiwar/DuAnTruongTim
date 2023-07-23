@@ -19,8 +19,14 @@ public class RequestServiceImpl : RequestService
     {
         try
         {
+            //request = new Requet
+            //{
+            //    Status = 0,
+            //    Sentdate= DateTime.Now,
+            //    Level= 0,
+            //};
             db.Requets.Add(request);
-            return db.SaveChanges() >0 ;
+            return db.SaveChanges() > 0;
         }
         catch { return false; }
     }

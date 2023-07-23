@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DuAnTruongTim.Models;
 
@@ -11,5 +12,6 @@ public partial class RequestFile
 
     public int IdRequest { get; set; }
 
+    [JsonIgnore]
     public virtual Requet IdRequestNavigation { get; set; } = null!;
 }

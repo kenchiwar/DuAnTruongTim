@@ -19,7 +19,13 @@ builder.Services.AddScoped<DepartmentService, DepartmentServiceImpl>();
 builder.Services.AddScoped<RequestService, RequestServiceImpl>();
 builder.Services.AddScoped<RoleClaimService, RoleClaimServiceImpl>();
 builder.Services.AddScoped<RoleService, RoleServiceImpl>();
+builder.Services.AddScoped<RequestFileServicecs, RequestFileServiceImpl>();
 builder.Services.AddScoped<AuthorizeAccount>();
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.MaxDepth = 64;
+});
 
 var app = builder.Build();
 app.MapControllers();
