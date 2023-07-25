@@ -1,6 +1,7 @@
 ﻿using DuAnTruongTim.Models;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace DuAnTruongTim.Services;
 
@@ -26,6 +27,16 @@ public class RequestServiceImpl : RequestService
             //    Level= 0,
             //};
             db.Requets.Add(request);
+            return db.SaveChanges() > 0;
+        }
+        catch { return false; }
+    }
+
+    public bool createdRequestDetail(Requetsdetailed requestDetail)
+    {
+        try
+        {
+            db.Requetsdetaileds.Add(requestDetail);
             return db.SaveChanges() > 0;
         }
         catch { return false; }
@@ -157,6 +168,24 @@ public class RequestServiceImpl : RequestService
             priority = request.Priority,
         }).SingleOrDefault();
     }
+
+    //public dynamic getRequestOrderBy()
+    //{
+    //    return db.Requets.OrderByDescending().Select(
+    //        request => new
+    //        {
+    //            id = request.Id,
+    //            idComplain = request.IdComplain,
+    //            idDepartment = request.IdDepartment,
+    //            idHandle = request.IdHandle,
+    //            title = request.Title,
+    //            status = request.Status,
+    //            level = request.Level,
+    //            sentDate = request.Sentdate,
+    //            endDate = request.Enddate,
+    //            priority = request.Priority,
+    //        });
+    //}
 
     public bool updatedRequest(Requet request)
     {

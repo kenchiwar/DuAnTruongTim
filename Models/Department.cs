@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace DuAnTruongTim.Models;
@@ -15,7 +16,8 @@ public partial class Department
 
     public bool? Status { get; set; }
 
+    [JsonIgnore]
     public virtual ICollection<Account> Accounts { get; set; } = new List<Account>();
-
+    [JsonIgnore]
     public virtual ICollection<Requet> Requets { get; set; } = new List<Requet>();
 }

@@ -11,6 +11,8 @@ using DuAnTruongTim.Services;
 using Newtonsoft.Json.Converters;
 using DuAnTruongTim.Helpers;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Rewrite;
+using Azure.Core;
 
 namespace DuAnTruongTim.Controllers
 {
@@ -39,23 +41,43 @@ namespace DuAnTruongTim.Controllers
             webHostEnvironment = _webHostEnvironment;
         }
 
-        // GET: api/Requets
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<Requet>>> GetRequets()
-        //{
-        //  if (_context.Requets == null)
-        //  {
-        //      return NotFound();
-        //  }
-        //    return await _context.Requets.ToListAsync();
-        //}
-
+        //GET: api/Requets
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<RequestFile>>> GetRequestFiles()
+        public async Task<ActionResult<IEnumerable<Requet>>> GetRequets()
         {
-            var requestFiles = await _context.RequestFiles.ToListAsync();
-            return Ok(requestFiles);
+          if (_context.Requets == null)
+         {
+              return NotFound();
+          }
+            return await _context.Requets.ToListAsync();
         }
+
+        [HttpGet("getRequestIndex")]
+        public async Task<ActionResult<IEnumerable<Requet>>> GetRequets_()
+        {
+            if (_context.Requets == null)
+            {
+                return NotFound();
+            }
+            return await _context.Requets.Where(re => re.IdHandle == null).ToListAsync();
+        }
+
+        [HttpGet("getRequestDetail")]
+        public async Task<ActionResult<IEnumerable<Requetsdetailed>>> GetRequetsDetail()
+        {
+            if (_context.Requetsdetaileds == null)
+            {
+                return NotFound();
+            }
+            return await _context.Requetsdetaileds.ToListAsync();
+        }
+
+        //[HttpGet]
+        //public async Task<ActionResult<IEnumerable<Requet>>> GetRequestFiles()
+        //{
+        //    var requestFiles = await _context.Requets.ToListAsync();
+        //    return Ok(requestFiles);
+        //}
 
         // GET: api/Requets/5
         [HttpGet("{id}")]
@@ -78,14 +100,18 @@ namespace DuAnTruongTim.Controllers
         // PUT: api/Requets/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRequet(int id, Requet requet)
+        public async Task<IActionResult> PutRequet(int id, string strRequest)
         {
-            if (id != requet.Id)
+            var request = JsonConvert.DeserializeObject<Requet>(strRequest, new IsoDateTimeConverter
+            {
+                DateTimeFormat = "dd/MM/yyyy"
+            });
+            if (id != request.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(requet).State = EntityState.Modified;
+            _context.Entry(request).State = EntityState.Modified;
 
             try
             {
@@ -170,56 +196,57 @@ namespace DuAnTruongTim.Controllers
 
         [Consumes("multipart/form-data")]
         [Produces("application/json")]
-        [HttpPost("created")]
-        public IActionResult CreatedRequest(string strRequest)
+        [HttpPost("createRequestWithFile")]
+        public IActionResult CreateRequestWithFile(string strRequest, IFormFile file)
         {
             try
             {
+                // Giải mã chuỗi JSON để lấy thông tin về yêu cầu (request)
                 var request = JsonConvert.DeserializeObject<Requet>(strRequest, new IsoDateTimeConverter
                 {
                     DateTimeFormat = "dd/MM/yyyy"
                 });
-                //var idAcc = accountService.getAccountLogin();
-                //Debug.WriteLine(idAcc);
                 request.Sentdate = DateTime.Now;
-                //request.IdComplain = idAcc.Id;
                 bool result = requestService.createdRequest(request);
-                return Ok(new
+                if (file != null)
                 {
-                    Result = result
-                });
-            }
-            catch { return BadRequest(); }
-        }
+                    //var addRequest = _context.Requets.Add(request);
 
-        [Consumes("multipart/form-data")]
-        [Produces("application/json")]
-        [HttpPost("requestFile")]
-        public IActionResult CreatedRequstFile(IFormFile name,string strRequestFile)
-        {
-            try
-            {
-                var fileName = FileHelper.generateFileName(name.FileName);
-                var path = Path.Combine(webHostEnvironment.WebRootPath, "RequestFile", fileName);
-                using (var fileStream = new FileStream(path, FileMode.Create))
-                {
-                    name.CopyTo(fileStream);
-                };
-                var requestFile = JsonConvert.DeserializeObject<RequestFile>(strRequestFile, new IsoDateTimeConverter
+
+                    // Xử lý tệp tin (file)
+                    var fileName = FileHelper.generateFileName(file.FileName);
+                    var path = Path.Combine(webHostEnvironment.WebRootPath, "RequestFile", fileName);
+                    using (var fileStream = new FileStream(path, FileMode.Create))
+                    {
+                        file.CopyTo(fileStream);
+                    };
+                    var requestFile = new RequestFile
+                    {
+                        IdRequest = request.Id,
+                        Name = fileName
+                    };
+                    requestFileService.CreatedRequestFile(requestFile);
+                    
+                }
+                var requestDetail = JsonConvert.DeserializeObject<Requetsdetailed>(strRequest, new IsoDateTimeConverter
                 {
                     DateTimeFormat = "dd/MM/yyyy"
                 });
-                requestFile.IdRequest = 1;
-                requestFile.Name = fileName;
-                //Debug.WriteLine("ágagsagasgas");
-                //Debug.WriteLine(fileName);
-                bool result = requestFileService.CreatedRequestFile(requestFile);
+
+                requestDetail.IdRequest = request.Id;
+                requestDetail.Sentdate = DateTime.Now;
+               bool result_ = requestService.createdRequestDetail(requestDetail);
+                
                 return Ok(new
-                {
-                    Result = result
-                });
+                    {
+                        Result = result,
+                        Result_ = result_
+                   });
             }
-            catch { return BadRequest(); }
+            catch
+            {
+                return BadRequest();
+            }
         }
 
         [Consumes("multipart/form-data")]
@@ -242,4 +269,28 @@ namespace DuAnTruongTim.Controllers
             catch { return BadRequest(); }
         }
     }
+
+    //[HttpPut("accept")]
+    //public IActionResult Accept(int id, string updatedRequest)
+    //{
+    //    var request = JsonConvert.DeserializeObject<Requet>(updatedRequest, new IsoDateTimeConverter
+    //    {
+    //        DateTimeFormat = "dd/MM/yyyy"
+    //    });
+
+    //    var existingRequest = _cont
+
+    //    if (existingRequest == null)
+    //    {
+    //        return NotFound();
+    //    }
+    //    // Update existing request with new values
+    //    existingRequest.Property1 = updatedRequest.Property1;
+    //    existingRequest.Property2 = updatedRequest.Property2;
+    //    // ...
+
+    //    _context.SaveChanges();
+
+    //    return Ok();
+    //}
 }

@@ -1,0 +1,1 @@
+Scaffold-DbContext "Server=LAPTOP-23FPH155;Database=QLVMB;user id=sa;password=0123456;trusted_connection=true;encrypt=false" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Context DatabaseContext -f
