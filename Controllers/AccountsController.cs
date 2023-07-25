@@ -48,6 +48,7 @@ namespace DuAnTruongTim.Controllers
             {
                 return NotFound();
             }
+            var met = _accountService.getAccountLogin();
             return await _accountService.getAllAccount();
         }
 
@@ -73,13 +74,12 @@ namespace DuAnTruongTim.Controllers
             return account!=null?Ok(account):NotFound();
         }
          [HttpGet("detail/{id}")]
-
         public async Task<ActionResult<dynamic>> GetAccountDetail(int id)
         {
             var accountLogin = _accountService.getAccountLogin();
             
             //Kiêm tra coi đủ phầm quyền ko 
-           if (!(accountLogin.IdRole<=2))    return Unauthorized();
+           if (!(accountLogin.IdRole<=2|| accountLogin.Id==id))    return Unauthorized();
             
 
             
@@ -243,7 +243,7 @@ namespace DuAnTruongTim.Controllers
 
                
                 }
-                      account.Password=BCrypt.Net.BCrypt.HashString("@123456");
+                      account.Password=BCrypt.Net.BCrypt.HashString("@123456789");
                     _context.Accounts.Add(account);
                     if (await _context.SaveChangesAsync() > 0) return Ok(new ResultApi(true, "Add new Account Success"));
                     return Ok(new ResultApi(true, "Add new Account Error "));
