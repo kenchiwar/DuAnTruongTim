@@ -212,7 +212,8 @@ namespace DuAnTruongTim.Controllers
                 {
                     //var addRequest = _context.Requets.Add(request);
 
-
+                    var acc = accountService.getAccountLogin();
+                    Console.WriteLine(acc); 
                     // Xử lý tệp tin (file)
                     var fileName = FileHelper.generateFileName(file.FileName);
                     var path = Path.Combine(webHostEnvironment.WebRootPath, "RequestFile", fileName);
