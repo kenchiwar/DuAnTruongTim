@@ -440,7 +440,7 @@ public class AccountServiceImpl : AccountService
       
     public async Task<bool> changePass(string username , string password)
     {
-        var account = await db.Accounts.FirstOrDefaultAsync(a=>a.Username==username);
+        var account = await db.Accounts.FirstOrDefaultAsync(a=>a.Username.Equals(username));
         if (account != null)
         {
             account.Password = BCrypt.Net.BCrypt.HashPassword(password);

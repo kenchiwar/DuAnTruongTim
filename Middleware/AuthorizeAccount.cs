@@ -4,9 +4,8 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace DuAnTruongTim.Middleware;
 
-public class AuthorizeAccount : Attribute, IAuthorizationFilter
+public class AuthorizeAccount : Attribute,IAuthorizationFilter
 {
-    
     
     //public AccountService AccountService { get; set; }
     public void OnAuthorization(AuthorizationFilterContext context )
