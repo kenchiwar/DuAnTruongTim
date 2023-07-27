@@ -26,18 +26,15 @@ public partial class Requet
 
     public short? Priority { get; set; }
 
-    [JsonIgnore]
     public virtual Account IdComplainNavigation { get; set; } = null!;
 
-    [JsonIgnore]
     public virtual Department IdDepartmentNavigation { get; set; } = null!;
 
-    [JsonIgnore]
     public virtual Account? IdHandleNavigation { get; set; }
 
-    [JsonIgnore]
     public virtual ICollection<RequestFile> RequestFiles { get; set; } = new List<RequestFile>();
-
-    [JsonIgnore]
     public virtual ICollection<Requetsdetailed> Requetsdetaileds { get; set; } = new List<Requetsdetailed>();
+    public Requet() { }
 }
+
+

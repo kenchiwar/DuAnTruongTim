@@ -28,8 +28,7 @@ public class RequestFileController : Controller
         requestFileService = _requestFileServicecs;
     }
 
-    [HttpGet]
-
+    [HttpGet("get")]
     public async Task<ActionResult<IEnumerable<RequestFile>>> GetRequets()
     {
         if (db.RequestFiles == null)

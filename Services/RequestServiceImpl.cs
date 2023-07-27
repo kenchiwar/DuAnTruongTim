@@ -137,7 +137,13 @@ public class RequestServiceImpl : RequestService
 
     public dynamic getRequest()
     {
-        return db.Requets.Select(request => new
+        return db.Requets
+            .Include(a=>a.IdComplainNavigation)
+            .Include(a=>a.IdDepartmentNavigation)
+            .Include(a=>a.IdHandleNavigation)
+            .Include(a=>a.RequestFiles)
+            .Include(a=>a.Requetsdetaileds)
+            .Select(request => new
         {
             id = request.Id,
             idComplain = request.IdComplain,
@@ -149,7 +155,64 @@ public class RequestServiceImpl : RequestService
             sentDate = request.Sentdate,
             endDate = request.Enddate,
             priority = request.Priority,
-        }).ToList();
+            idComplainNavigation = new
+            {
+                request.IdComplainNavigation.Id,
+                request.IdComplainNavigation.Fullname,
+                request.IdComplainNavigation.Username
+            },
+            idDepartmentNavigation = new
+            {
+                request.IdDepartmentNavigation.Id,
+                request.IdDepartmentNavigation.TenDepartment,
+                request.IdDepartmentNavigation.Describe,
+                request.IdDepartmentNavigation.Address,
+                request.IdDepartmentNavigation.Status,
+
+            },
+            idHandleNavigation = new
+            {
+                request.IdComplainNavigation.Id,
+               
+                request.IdComplainNavigation.Fullname,
+              
+              
+                request.IdComplainNavigation.Academicrank,
+                request.IdComplainNavigation.Address,
+                request.IdComplainNavigation.Citizenidentification,
+                request.IdComplainNavigation.Class,
+                request.IdComplainNavigation.Dateofbirth,
+                request.IdComplainNavigation.Degree,
+                request.IdComplainNavigation.Emailaddress,
+            
+                request.IdComplainNavigation.IdRole,
+                request.IdComplainNavigation.Role,
+              
+           
+                request.IdComplainNavigation.Phonenumber,
+                request.IdComplainNavigation.Schoolyear,
+                request.IdComplainNavigation.Status,
+                request.IdComplainNavigation.Username
+            },
+            requestFiles = request.RequestFiles.Select(requestF => new
+            {
+                id = requestF.Id,
+                name = requestF.Name,
+                idRequest = requestF.IdRequest,
+           
+            }),
+            requestDetails = request.Requetsdetaileds.Select(requestDetail => new {
+                id = requestDetail.Id,
+                sentDate = requestDetail.Sentdate,
+                payday = requestDetail.Payday,
+                reason = requestDetail.Reason,
+                status = requestDetail.Status,
+                reply = requestDetail.Reply,
+                idRequest = requestDetail.IdRequest,
+              
+
+            })
+        }).ToList<dynamic>();
     }
 
     public dynamic getRequestById(int id)
@@ -166,7 +229,7 @@ public class RequestServiceImpl : RequestService
             sentDate = request.Sentdate,
             endDate = request.Enddate,
             priority = request.Priority,
-        }).SingleOrDefault();
+        }).FirstOrDefault();
     }
 
     //public dynamic getRequestOrderBy()

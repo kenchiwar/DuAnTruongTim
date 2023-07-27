@@ -403,8 +403,8 @@ public class AccountServiceImpl : AccountService
         //account.Username = "Fadasdad1234@gmail.com";
         try
         {
-            var a = _httpContext.HttpContext?.Items["account"] as string;
-                
+            var b = _httpContext.HttpContext?.Items["account"];
+            var a = b as string;
            var account = JsonConvert.DeserializeObject<Account>(a);
             return account??null;
         }
