@@ -29,6 +29,7 @@ public class AddAccountLoginMiddleware
 
            if (account != null) httpContext.Items["account"] = JsonConvert.SerializeObject(account);
           
+          
         }
 
      

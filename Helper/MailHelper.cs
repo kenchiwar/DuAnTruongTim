@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Net.Mail;
 
-namespace DemoSession4_WebMVC.Helpers
+namespace DuAnTruongTim.Helpers
 {
     public class MailHelper
     {

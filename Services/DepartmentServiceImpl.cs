@@ -15,6 +15,7 @@ public class DepartmentServiceImpl : DepartmentService
     {
         try
         {
+            
             db.Departments.Add(department);
             return db.SaveChanges() > 0;
         }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace DuAnTruongTim.Models;
 
@@ -32,6 +33,8 @@ public partial class Requet
     public virtual Account? IdHandleNavigation { get; set; }
 
     public virtual ICollection<RequestFile> RequestFiles { get; set; } = new List<RequestFile>();
-
     public virtual ICollection<Requetsdetailed> Requetsdetaileds { get; set; } = new List<Requetsdetailed>();
+    public Requet() { }
 }
+
+

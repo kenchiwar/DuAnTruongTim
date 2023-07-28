@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace DuAnTruongTim.Models;
@@ -11,5 +12,6 @@ public partial class RequestFile
 
     public int IdRequest { get; set; }
 
+    [JsonIgnore]
     public virtual Requet IdRequestNavigation { get; set; } = null!;
 }
