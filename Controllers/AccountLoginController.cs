@@ -1,5 +1,6 @@
 ﻿using DuAnTruongTim.Models;
 using DuAnTruongTim.Services;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp;
@@ -13,11 +14,13 @@ public class AccountLoginController : ControllerBase
 {
         private readonly AccountService _accountService;
      private readonly CheckQlgiaoVuContext _context;
-    public AccountLoginController(AccountService accountService,CheckQlgiaoVuContext context)
+    private IWebHostEnvironment _webHostEnvironment;
+    public AccountLoginController(AccountService accountService,CheckQlgiaoVuContext context,IWebHostEnvironment webHostEnvironment)
     {
         _accountService = accountService;
 
         _context = context;
+        _webHostEnvironment = webHostEnvironment;
     }
       [HttpGet]
         public async Task<ActionResult> GetAccounts()
@@ -67,6 +70,51 @@ return NotFound();
        return Ok(new ResultApi(await _accountService.changePass(username,password),"fssdfsf"));
 
     }
+     [HttpPost("changeImage")] 
+             [Consumes("multipart/form-data")]	
+        [Produces("application/json")]
+     public async Task<ActionResult> changeImage ([FromForm] IFormFile? file )
+
+    {
+        var account = _accountService.getAccountLogin();
+        if(account == null) return Unauthorized();
+        if (file != null)
+                    {
+            var databaseAccount = await _context.Accounts.FindAsync(account.Id); 
+            if(databaseAccount == null) return NotFound();
+                        var fileName = GenerateRandomString(10);
+                        fileName = Path.Combine("account", fileName + Path.GetExtension(file.FileName));
+                        //Nếu có đường dẫn thì xóa 
+                        if (account.Citizenidentification != null)
+            {
+                            var filePath1 = Path.Combine(_webHostEnvironment.WebRootPath, databaseAccount.Citizenidentification ?? "abc");
+                            using var stream = new FileStream(filePath1, FileMode.Open);
+
+                            stream.Dispose();
+            }
+
+                        var filePath = Path.Combine(_webHostEnvironment.WebRootPath, fileName);
+                        using var fileStream = new FileStream(filePath, FileMode.Create);
+                        await file.CopyToAsync(fileStream);
+                        
+                        //Nếu có file mói thì thêm đường dẫn mới vào 
+                        databaseAccount.Citizenidentification = fileName;
+                        _context.Accounts.Update(databaseAccount);
+                        if(_context.SaveChanges()<=0) return NotFound();
+
+              return Ok(filePath);    
+
+
+         }
+
+
+
+        return Ok();    
+
+       //return Ok(new ResultApi(await _accountService.changePass(username,password),"fssdfsf"));
+
+    }
+
        public  string GenerateRandomString(int length)
         {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
