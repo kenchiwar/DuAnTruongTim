@@ -10,22 +10,18 @@ namespace DuAnTruongTim.Services;
 public class RequestServiceImpl : RequestService
 {
     private CheckQlgiaoVuContext db;
-    
-    public RequestServiceImpl(CheckQlgiaoVuContext _Db)
+    private IConfiguration configuration;
+    public RequestServiceImpl(CheckQlgiaoVuContext _Db, IConfiguration _configuration)
     {
         db = _Db;
+        configuration = _configuration;
     }
 
     public bool createdRequest(Requet request)
     {
         try
         {
-            //request = new Requet
-            //{
-            //    Status = 0,
-            //    Sentdate= DateTime.Now,
-            //    Level= 0,
-            //};
+           
             db.Requets.Add(request);
             return db.SaveChanges() > 0;
         }
@@ -135,6 +131,30 @@ public class RequestServiceImpl : RequestService
         }).ToListAsync();
     }
 
+    public dynamic getDetailById(int id)
+    {
+        return db.Requetsdetaileds.Where(re => re.IdRequest == id).Select(request => new
+        {
+            id = request.Id,
+            sentDate = request.Sentdate,
+            payday = request.Payday,
+            reason = request.Reason,
+            status = request.Status,
+            reply = request.Reply,
+            idRequest = request.IdRequest
+        }).FirstOrDefault();
+    }
+
+    public dynamic getFileById(int id)
+    {
+        return db.RequestFiles.Where(idR => idR.IdRequest == id).Select(request => new
+        {
+            file = request.Name,
+            name = configuration["BaseUrl"] + "RequestFile/" + request.Name,
+        }).ToList();
+    }
+
+
     public dynamic getRequest()
     {
         return db.Requets
@@ -159,7 +179,7 @@ public class RequestServiceImpl : RequestService
             {
                 request.IdComplainNavigation.Id,
                 request.IdComplainNavigation.Fullname,
-                request.IdComplainNavigation.Username
+                request.IdComplainNavigation.Username,
             },
             idDepartmentNavigation = new
             {
@@ -229,26 +249,59 @@ public class RequestServiceImpl : RequestService
             sentDate = request.Sentdate,
             endDate = request.Enddate,
             priority = request.Priority,
+            idComplainNavigation = new
+            {
+                request.IdComplainNavigation.Id,
+                request.IdComplainNavigation.Fullname,
+                request.IdComplainNavigation.Username,
+            },
+            idDepartmentNavigation = new
+            {
+                request.IdDepartmentNavigation.Id,
+                request.IdDepartmentNavigation.TenDepartment,
+                request.IdDepartmentNavigation.Describe,
+                request.IdDepartmentNavigation.Address,
+                request.IdDepartmentNavigation.Status,
+
+            },
+            idHandleNavigation = new
+            {
+                request.IdComplainNavigation.Id,
+                request.IdComplainNavigation.Fullname,
+                request.IdComplainNavigation.Academicrank,
+                request.IdComplainNavigation.Address,
+                request.IdComplainNavigation.Citizenidentification,
+                request.IdComplainNavigation.Class,
+                request.IdComplainNavigation.Dateofbirth,
+                request.IdComplainNavigation.Degree,
+                request.IdComplainNavigation.Emailaddress,
+                request.IdComplainNavigation.IdRole,
+                request.IdComplainNavigation.Role,
+                request.IdComplainNavigation.Phonenumber,
+                request.IdComplainNavigation.Schoolyear,
+                request.IdComplainNavigation.Status,
+                request.IdComplainNavigation.Username
+            },
+            requestFiles = request.RequestFiles.Select(requestF => new
+            {
+                id = requestF.Id,
+                name = requestF.Name,
+                idRequest = requestF.IdRequest,
+
+            }),
+            requestDetails = request.Requetsdetaileds.Select(requestDetail => new {
+                id = requestDetail.Id,
+                sentDate = requestDetail.Sentdate,
+                payday = requestDetail.Payday,
+                reason = requestDetail.Reason,
+                status = requestDetail.Status,
+                reply = requestDetail.Reply,
+                idRequest = requestDetail.IdRequest,
+
+
+            })
         }).FirstOrDefault();
     }
-
-    //public dynamic getRequestOrderBy()
-    //{
-    //    return db.Requets.OrderByDescending().Select(
-    //        request => new
-    //        {
-    //            id = request.Id,
-    //            idComplain = request.IdComplain,
-    //            idDepartment = request.IdDepartment,
-    //            idHandle = request.IdHandle,
-    //            title = request.Title,
-    //            status = request.Status,
-    //            level = request.Level,
-    //            sentDate = request.Sentdate,
-    //            endDate = request.Enddate,
-    //            priority = request.Priority,
-    //        });
-    //}
 
     public bool updatedRequest(Requet request)
     {
@@ -261,5 +314,15 @@ public class RequestServiceImpl : RequestService
         {
             return false;
         }
+    }
+
+    public bool updatedRequestDetail(Requetsdetailed requestDetail)
+    {
+        try
+        {
+            db.Entry(requestDetail).State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+            return db.SaveChanges() > 0;
+        }
+        catch { return false; }
     }
 }

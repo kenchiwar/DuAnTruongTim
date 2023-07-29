@@ -14,6 +14,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Rewrite;
 using Azure.Core;
 using Castle.Components.DictionaryAdapter.Xml;
+using Microsoft.AspNetCore.Hosting;
 
 namespace DuAnTruongTim.Controllers
 {
@@ -150,7 +151,6 @@ namespace DuAnTruongTim.Controllers
                 var idHandel = accountService.getAccountLogin();
                 request.IdHandle = idHandel.Id;
                 request.Status = 1;
-                request.Level = 1;
                 if (requestDetail.IdRequest != null)
                 {
                     requestDetail.Status = request.Status;
@@ -163,6 +163,52 @@ namespace DuAnTruongTim.Controllers
                 await _context.SaveChangesAsync();
 
                 return Ok();
+            }
+            catch (Exception)
+            {
+
+                return NotFound("fff11");
+            }
+            //var strRequest = JsonConvert.DeserializeObject<Requet>(strRequest);
+
+        }
+
+
+        [Consumes("multipart/form-data")]
+        [Produces("application/json")]
+        [HttpPut("updateDetail")]
+        public async Task<IActionResult> UpdateRequestDetail([FromForm]string requestDetail_)
+        {
+            try
+            {
+                var requestDetail = JsonConvert.DeserializeObject<Requetsdetailed>(requestDetail_);
+
+                bool result = requestService.updatedRequestDetail(requestDetail);
+
+                //_context.Update(requestDetail_);
+                var request = await _context.Requets.FindAsync(requestDetail.IdRequest);
+                //var requestDetail = await _context.Requetsdetaileds.FirstOrDefaultAsync(r => r.IdRequest == id);
+                //Debug.WriteLine(requestDetail);
+                if (request == null)
+                {
+                    return NotFound();
+                }
+                request.Status = requestDetail.Status;
+                //var idHandel = accountService.getAccountLogin();
+                //request.IdHandle = idHandel.Id;
+                //request.Status = 1;
+                //request.Level = 1;
+
+                // Cập nhật thông tin của đối tượng Request từ updatedRequest
+                _context.Requets.Update(request);
+                //_context.Requetsdetaileds.Update(requestDetail);
+                await _context.SaveChangesAsync();
+
+                return Ok(new
+                {
+                    Result = result
+                }
+                    );
             }
             catch (Exception)
             {
@@ -254,15 +300,32 @@ namespace DuAnTruongTim.Controllers
                 });
                 request.Sentdate = DateTime.Now;
                 bool result = requestService.createdRequest(request);
+
+                var requestDetail = JsonConvert.DeserializeObject<Requetsdetailed>(strRequest, new IsoDateTimeConverter
+                {
+                    DateTimeFormat = "dd/MM/yyyy"
+                });
+
+                requestDetail.IdRequest = request.Id;
+                requestDetail.Sentdate = request.Sentdate;
+                bool result_ = requestService.createdRequestDetail(requestDetail);
+
                 if (files != null)
                 {
                     foreach (var file in files)
                    {
                  var acc = accountService.getAccountLogin();
-                //    //// Xử lý tệp tin (file)
-                var fileName = FileHelper.generateFileName(file.FileName);
-                var path = Path.Combine(webHostEnvironment.WebRootPath, "RequestFile", fileName);
-                using (var fileStream = new FileStream(path, FileMode.Create))
+                        //    //// Xử lý tệp tin (file)
+                        var fileName = GenerateRandomString(10);
+                        fileName = Path.Combine(fileName+"_id="+requestDetail.Id + Path.GetExtension(file.FileName));
+
+                        var filePath = Path.Combine(webHostEnvironment.WebRootPath, "RequestFile", fileName);
+                        //using var fileStream = new FileStream(filePath, FileMode.Create);
+                //        await file.CopyToAsync(fileStream);
+
+                //        var fileName = FileHelper.generateFileName("absasb"+file.FileName);
+                //var path = Path.Combine(webHostEnvironment.WebRootPath, "RequestFile", fileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
                 {
                    file.CopyTo(fileStream);
                 };
@@ -274,14 +337,7 @@ namespace DuAnTruongTim.Controllers
                 requestFileService.CreatedRequestFile(requestFile);
                  }
                 }
-                var requestDetail = JsonConvert.DeserializeObject<Requetsdetailed>(strRequest, new IsoDateTimeConverter
-                {
-                    DateTimeFormat = "dd/MM/yyyy"
-                });
-
-                requestDetail.IdRequest = request.Id;
-                requestDetail.Sentdate = DateTime.Now;
-                bool result_ = requestService.createdRequestDetail(requestDetail);
+                
 
                 return Ok(new
                 {
@@ -295,52 +351,62 @@ namespace DuAnTruongTim.Controllers
             }
         }
 
-        [Consumes("multipart/form-data")]
-        [Produces("application/json")]
-        [HttpPut("update/{id}")]
-        public IActionResult UpdateRequst(int id, string strRequest)
+        //[Consumes("multipart/form-data")]
+        //[Produces("application/json")]
+        //[HttpPut("update/{id}")]
+        //public IActionResult UpdateRequst(int id, string strRequest)
+        //{
+        //    try
+        //    {
+
+        //        var request = JsonConvert.DeserializeObject<Requet>(strRequest, new IsoDateTimeConverter
+        //        {
+        //            DateTimeFormat = "dd/MM/yyyy"
+        //        });
+        //        var request_ = _context.Requets.Find(id);
+        //        if (id != request_.Id)
+        //        {
+        //            return BadRequest();
+        //        }
+
+        //        request_.IdHandle = 2;
+        //        request_.Status = 1;
+        //        bool result = requestService.updatedRequest(request_);
+        //        return Ok(new
+        //        {
+        //            Result = result
+        //        });
+        //    }
+        //    catch { return BadRequest(); }
+        //}
+
+        [HttpGet("requestFile/{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
             try
             {
-
-                var request = JsonConvert.DeserializeObject<Requet>(strRequest, new IsoDateTimeConverter
-                {
-                    DateTimeFormat = "dd/MM/yyyy"
-                });
-                var request_ = _context.Requets.Find(id);
-                if (id != request_.Id)
-                {
-                    return BadRequest();
-                }
-
-                request_.IdHandle = 2;
-                request_.Status = 1;
-                bool result = requestService.updatedRequest(request_);
-                return Ok(new
-                {
-                    Result = result
-                });
+                return Ok(requestService.getFileById(id));
             }
             catch { return BadRequest(); }
         }
 
         [HttpGet("requestDetail/{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetRequestDetailById(int id)
         {
-            // Retrieve the Requet object and its related entities asynchronously
-            var request = await _context.Requets
-                    .Include(re => re.RequestFiles)
-                    .Include(re => re.Requetsdetaileds)
-                    .FirstOrDefaultAsync(re => re.Id == id);
-            if(request == null)
+            try
             {
-                return BadRequest("àasfasgas");
+                return Ok(requestService.getDetailById(id));
             }
-            var requestFiles = _context.RequestFiles.Include(r => r.Id).AsNoTracking().ToArrayAsync();
-            var requestsDetaileds = await _context.Requetsdetaileds.Where(rd => rd.IdRequest == request.Id).ToListAsync();
+            catch { return BadRequest(); }
+        }
 
-            return Ok(request);
+        public string GenerateRandomString(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var random = new Random();
+            return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
     }
+
 
 }
