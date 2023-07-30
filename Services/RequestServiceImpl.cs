@@ -145,6 +145,8 @@ public class RequestServiceImpl : RequestService
         }).FirstOrDefault();
     }
 
+   
+
     public dynamic getFileById(int id)
     {
         return db.RequestFiles.Where(idR => idR.IdRequest == id).Select(request => new
@@ -154,6 +156,19 @@ public class RequestServiceImpl : RequestService
         }).ToList();
     }
 
+    public dynamic getFileByIdDetail(int id)
+    {
+        return db.Requetsdetaileds.Where(re => re.IdRequest == id).Select(request => new
+        {
+            id = request.Id,
+            sentDate = request.Sentdate,
+            payday = request.Payday,
+            reason = request.Reason,
+            status = request.Status,
+            reply = request.Reply,
+            idRequest = request.IdRequest
+        }).ToList();
+    }
 
     public dynamic getRequest()
     {
@@ -302,6 +317,9 @@ public class RequestServiceImpl : RequestService
             })
         }).FirstOrDefault();
     }
+
+
+   
 
     public bool updatedRequest(Requet request)
     {

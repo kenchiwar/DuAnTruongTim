@@ -149,14 +149,52 @@ namespace DuAnTruongTim.Controllers
                     return NotFound();
                 }
                 var idHandel = accountService.getAccountLogin();
+                if (idHandel != null)
+                {
+                    return NotFound();
+                }
                 request.IdHandle = idHandel.Id;
                 request.Status = 1;
                 if (requestDetail.IdRequest != null)
                 {
                     requestDetail.Status = request.Status;
                 }
+                // Cập nhật thông tin của đối tượng Request từ updatedRequest
+                _context.Requets.Update(request);
+                _context.Requetsdetaileds.Update(requestDetail);
+                await _context.SaveChangesAsync();
 
+                return Ok();
+            }
+            catch (Exception)
+            {
 
+                return NotFound("fff11");
+            }
+        }
+
+        [HttpPut("reprocess/{id}")]
+        public async Task<IActionResult> UpdateRequestReprocess(int id, Requet strRequest, Requetsdetailed requestDetail_)
+        {
+            try
+            {
+                var request = await _context.Requets.FindAsync(id);
+                var requestDetail = await _context.Requetsdetaileds.FirstOrDefaultAsync(r => r.IdRequest == id);
+                //Debug.WriteLine(requestDetail);
+                if (request == null)
+                {
+                    return NotFound();
+                }
+                var idHandel = accountService.getAccountLogin();
+                if(idHandel != null)
+                {
+                    return NotFound();
+                }
+                request.Status = 1;
+                if (requestDetail.IdRequest != null)
+                {
+                    requestDetail.Status = request.Status;
+                }
                 // Cập nhật thông tin của đối tượng Request từ updatedRequest
                 _context.Requets.Update(request);
                 _context.Requetsdetaileds.Update(requestDetail);
@@ -172,7 +210,6 @@ namespace DuAnTruongTim.Controllers
             //var strRequest = JsonConvert.DeserializeObject<Requet>(strRequest);
 
         }
-
 
         [Consumes("multipart/form-data")]
         [Produces("application/json")]
@@ -194,14 +231,8 @@ namespace DuAnTruongTim.Controllers
                     return NotFound();
                 }
                 request.Status = requestDetail.Status;
-                //var idHandel = accountService.getAccountLogin();
-                //request.IdHandle = idHandel.Id;
-                //request.Status = 1;
-                //request.Level = 1;
-
-                // Cập nhật thông tin của đối tượng Request từ updatedRequest
+               
                 _context.Requets.Update(request);
-                //_context.Requetsdetaileds.Update(requestDetail);
                 await _context.SaveChangesAsync();
 
                 return Ok(new
@@ -213,7 +244,67 @@ namespace DuAnTruongTim.Controllers
             catch (Exception)
             {
 
-                return NotFound("fff11");
+                return NotFound();
+            }
+        }
+
+        [Consumes("multipart/form-data")]
+        [Produces("application/json")]
+        [HttpPost("updateUserRequest")]
+        public async Task<IActionResult> UpdateUserRequest([FromForm]string requestDetail_, List<IFormFile> files)
+        {
+            try
+            {
+                var requestDetail = JsonConvert.DeserializeObject<Requetsdetailed>(requestDetail_);
+                //_context.Update(requestDetail_);
+                var request = await _context.Requets.FirstOrDefaultAsync(r => r.Id == requestDetail.IdRequest); ;
+                if (request == null)
+                {
+                    return NotFound();
+                }
+                requestDetail.Sentdate = request.Sentdate;
+                requestDetail.Status = 5;
+
+                request.Status = requestDetail.Status;
+                _context.Requets.Update(request);
+                await _context.SaveChangesAsync();
+
+                //_context.Requetsdetaileds.Add(requestDetail);
+                bool result = requestService.createdRequestDetail(requestDetail);
+                //var a = 
+                //xu ly file
+                if (files != null)
+                {
+                    foreach (var file in files)
+                    {
+                        var acc = accountService.getAccountLogin();
+                        //    //// Xử lý tệp tin (file)
+                        var fileName = GenerateRandomString(10);
+                        fileName = Path.Combine(fileName + "_id=" + requestDetail.Id + Path.GetExtension(file.FileName));
+
+                        var filePath = Path.Combine(webHostEnvironment.WebRootPath, "RequestFile", fileName);
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            file.CopyTo(fileStream);
+                        };
+                        var requestFile = new RequestFile
+                        {
+                            IdRequest = request.Id,
+                            Name = fileName
+                        };
+                        requestFileService.CreatedRequestFile(requestFile);
+                    }
+                }
+                return Ok(new
+                {
+                    Result = result,
+                }
+                    );
+            }
+            catch (Exception)
+            {
+
+                return NotFound();
             }
             //var strRequest = JsonConvert.DeserializeObject<Requet>(strRequest);
 
@@ -286,6 +377,17 @@ namespace DuAnTruongTim.Controllers
             catch { return BadRequest(); }
         }
 
+        [Produces("application/json")]
+        [HttpGet("getRequestDetailFile/{id}")]
+        public IActionResult GetRequestDetailFile(int id)
+        {
+            try
+            {
+                return Ok(requestService.getFileByIdDetail(id));
+            }
+            catch { return BadRequest(); }
+        }
+
         [Consumes("multipart/form-data")]
         [Produces("application/json")]
         [HttpPost("createRequestWithFile")]
@@ -351,35 +453,6 @@ namespace DuAnTruongTim.Controllers
             }
         }
 
-        //[Consumes("multipart/form-data")]
-        //[Produces("application/json")]
-        //[HttpPut("update/{id}")]
-        //public IActionResult UpdateRequst(int id, string strRequest)
-        //{
-        //    try
-        //    {
-
-        //        var request = JsonConvert.DeserializeObject<Requet>(strRequest, new IsoDateTimeConverter
-        //        {
-        //            DateTimeFormat = "dd/MM/yyyy"
-        //        });
-        //        var request_ = _context.Requets.Find(id);
-        //        if (id != request_.Id)
-        //        {
-        //            return BadRequest();
-        //        }
-
-        //        request_.IdHandle = 2;
-        //        request_.Status = 1;
-        //        bool result = requestService.updatedRequest(request_);
-        //        return Ok(new
-        //        {
-        //            Result = result
-        //        });
-        //    }
-        //    catch { return BadRequest(); }
-        //}
-
         [HttpGet("requestFile/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -409,4 +482,5 @@ namespace DuAnTruongTim.Controllers
     }
 
 
+    
 }

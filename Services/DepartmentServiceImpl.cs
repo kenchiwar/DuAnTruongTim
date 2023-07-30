@@ -25,6 +25,16 @@ public class DepartmentServiceImpl : DepartmentService
         }
     }
 
+    public dynamic getAccDepartmentById(int id)
+    {
+        return db.Accounts.Where(a => a.IdDepartment == id).Select(a => new { 
+            fullname = a.Fullname,
+            emailAddress = a.Emailaddress,
+            sex = a.Sex,
+            numberPhone = a.Phonenumber,
+        }).FirstOrDefault();
+    }
+
     public dynamic getAllDepartment()
     {
         return db.Departments.Select(department => new
@@ -85,7 +95,39 @@ public class DepartmentServiceImpl : DepartmentService
             describe = department.Describe,
             address = department.Address,
             status = department.Status,
-
+            accounts = department.Accounts.Select(account => new
+            {
+                id = account.Id,
+                username = account.Username,
+                password = account.Password,
+                idRole = account.IdRole,
+                fullname = account.Fullname,
+                emailaddress = account.Emailaddress,
+                phonenumber = account.Phonenumber,
+                address = account.Address,
+                citizenidentification = account.Citizenidentification,
+                dateofbirth = account.Dateofbirth,
+                sex = account.Sex,
+                status = account.Status,
+                _class = account.Class,
+                schoolyear = account.Schoolyear,
+                degree = account.Degree,
+                academicrank = account.Academicrank,
+               
+            }),
+            requests = department.Requets.Select(request => new
+            {
+                id = request.Id,
+                idComplain = request.IdComplain,
+                idDepartment = request.IdDepartment,
+                idHandle = request.IdHandle,
+                title = request.Title,
+                status = request.Status,
+                level = request.Level,
+                sentDate = request.Sentdate,
+                endDate = request.Enddate,
+                priority = request.Priority,
+            })
         }).FirstOrDefault();
 
        

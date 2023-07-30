@@ -15,4 +15,5 @@ public interface RequestService
     public bool updatedRequest(Requet request);
     public bool updatedRequestDetail(Requetsdetailed requestDetail);
 
+    public dynamic getFileByIdDetail(int id);
 }

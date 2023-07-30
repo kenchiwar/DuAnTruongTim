@@ -151,6 +151,17 @@ namespace DuAnTruongTim.Controllers
             catch { return BadRequest(); }
         }
 
+        [Produces("application/json")]
+        [HttpGet("getAccDepartmentById/{id}")]
+        public IActionResult GetAccDepartmentById(int id)
+        {
+            try
+            {
+                return Ok(departmentService.getAccDepartmentById(id));
+            }
+            catch { return BadRequest(); }
+        }
+
         [Consumes("multipart/form-data")]
         [Produces("application/json")]
         [HttpPost("created")]
