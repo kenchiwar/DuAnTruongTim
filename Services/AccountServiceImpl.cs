@@ -3,6 +3,7 @@ using DuAnTruongTim.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json;
+using System.Collections.Immutable;
 
 namespace DuAnTruongTim.Services;
 
@@ -290,7 +291,16 @@ public class AccountServiceImpl : AccountService
                 sentDate = requestComplainNavigation.Sentdate,
                 endDate = requestComplainNavigation.Enddate,
                 priority = requestComplainNavigation.Priority,
-            
+                idDepartmentNavigation = new
+                {
+                    requestComplainNavigation.IdDepartmentNavigation.Id,
+                    requestComplainNavigation.IdDepartmentNavigation.TenDepartment,
+                    requestComplainNavigation.IdDepartmentNavigation.Describe,
+                    requestComplainNavigation.IdDepartmentNavigation.Address,
+                    requestComplainNavigation.IdDepartmentNavigation.Status,
+
+                },
+
 
             }),
             requetIdHandleNavigations = account.RequetIdHandleNavigations.Select(requestHandleNavigation => new
@@ -305,7 +315,16 @@ public class AccountServiceImpl : AccountService
                 sentDate = requestHandleNavigation.Sentdate,
                 endDate = requestHandleNavigation.Enddate,
                 priority = requestHandleNavigation.Priority,
-              
+                idDepartmentNavigation = new
+                {
+                    requestHandleNavigation.IdDepartmentNavigation.Id,
+                    requestHandleNavigation.IdDepartmentNavigation.TenDepartment,
+                    requestHandleNavigation.IdDepartmentNavigation.Describe,
+                    requestHandleNavigation.IdDepartmentNavigation.Address,
+                    requestHandleNavigation.IdDepartmentNavigation.Status,
+
+                },
+
             }),
 
 
@@ -427,7 +446,11 @@ public class AccountServiceImpl : AccountService
 
     public async Task<dynamic> GetAccountDetail(int id)
     {
-         var account = await db.Accounts.Include(a=>a.IdRoleNavigation).Include(a=>a.IdDepartmentNavigation).Include(a=>a.IdRoleClaims).Include(a=>a.RequetIdComplainNavigations).Include(a=>a.RequetIdHandleNavigations).AsNoTracking<Account>().FirstOrDefaultAsync(x=>x.Id == id);
+         var account = await db.Accounts.Include(a=>a.IdRoleNavigation).Include(a=>a.IdDepartmentNavigation)
+            .Include(a=>a.IdRoleClaims)
+            .Include(a=>a.RequetIdComplainNavigations).ThenInclude(od=>od.IdDepartmentNavigation)
+            .Include(a=>a.RequetIdHandleNavigations).ThenInclude(od=>od.IdDepartmentNavigation)
+            .AsNoTracking<Account>().FirstOrDefaultAsync(x=>x.Id == id);
         return this.GetDynamicDetail(account) ;
     }
         public async Task<dynamic?> login(string username , string password)
