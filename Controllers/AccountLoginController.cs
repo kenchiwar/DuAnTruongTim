@@ -114,7 +114,7 @@ return NotFound();
        //return Ok(new ResultApi(await _accountService.changePass(username,password),"fssdfsf"));
 
     }
-
+    
        public  string GenerateRandomString(int length)
         {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
