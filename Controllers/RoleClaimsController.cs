@@ -53,18 +53,10 @@ namespace DuAnTruongTim.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<RoleClaim>> GetRoleClaim(int id)
         {
-          if (_context.RoleClaims == null)
-          {
-              return NotFound();
-          }
-            var roleClaim = await _context.RoleClaims.FindAsync(id);
-
-            if (roleClaim == null)
+            try
             {
-                return NotFound();
-            }
-
-            return roleClaim;
+                return Ok(roleClaimService.GetRoleClaimById(id));
+            }catch { return BadRequest(); }
         }
 
         // PUT: api/RoleClaims/5

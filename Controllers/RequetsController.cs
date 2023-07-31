@@ -149,9 +149,17 @@ namespace DuAnTruongTim.Controllers
                     return NotFound();
                 }
                 var idHandel = accountService.getAccountLogin();
-                if (idHandel != null)
+                if (idHandel == null)
                 {
                     return NotFound();
+                }
+                if(request.IdComplainNavigation.Id == idHandel.Id)
+                {
+                    return NotFound("This is your request!");
+                }
+                if(request.IdHandle != null)
+                {
+                    return NotFound("Was Handel!");
                 }
                 request.IdHandle = idHandel.Id;
                 request.Status = 1;
@@ -162,9 +170,12 @@ namespace DuAnTruongTim.Controllers
                 // Cập nhật thông tin của đối tượng Request từ updatedRequest
                 _context.Requets.Update(request);
                 _context.Requetsdetaileds.Update(requestDetail);
-                await _context.SaveChangesAsync();
+               bool result = await _context.SaveChangesAsync() > 0;
 
-                return Ok();
+                return Ok(new
+                {
+                    Result = result,
+                });
             }
             catch (Exception)
             {
@@ -186,9 +197,13 @@ namespace DuAnTruongTim.Controllers
                     return NotFound();
                 }
                 var idHandel = accountService.getAccountLogin();
-                if(idHandel != null)
+                if(idHandel == null)
                 {
                     return NotFound();
+                }
+                if (request.IdComplainNavigation.Id == idHandel.Id)
+                {
+                    return NotFound("This is your request!");
                 }
                 request.Status = 1;
                 if (requestDetail.IdRequest != null)
@@ -198,9 +213,12 @@ namespace DuAnTruongTim.Controllers
                 // Cập nhật thông tin của đối tượng Request từ updatedRequest
                 _context.Requets.Update(request);
                 _context.Requetsdetaileds.Update(requestDetail);
-                await _context.SaveChangesAsync();
+               bool result = await _context.SaveChangesAsync() >0;
 
-                return Ok();
+                return Ok(new
+                {
+                    Result = result
+                });
             }
             catch (Exception)
             {
@@ -226,11 +244,21 @@ namespace DuAnTruongTim.Controllers
                 var request = await _context.Requets.FindAsync(requestDetail.IdRequest);
                 //var requestDetail = await _context.Requetsdetaileds.FirstOrDefaultAsync(r => r.IdRequest == id);
                 //Debug.WriteLine(requestDetail);
+                var idHandle = accountService.getAccountLogin();
                 if (request == null)
                 {
                     return NotFound();
                 }
+                if (request.IdComplainNavigation.Id == idHandle.Id)
+                {
+                    return NotFound("This is your request!");
+                }
                 request.Status = requestDetail.Status;
+                if(requestDetail.Status == 4)
+                {
+                    requestDetail.Payday = DateTime.Now;
+                    request.Enddate = requestDetail.Payday;
+                }
                
                 _context.Requets.Update(request);
                 await _context.SaveChangesAsync();
@@ -263,7 +291,7 @@ namespace DuAnTruongTim.Controllers
                     return NotFound();
                 }
                 requestDetail.Sentdate = request.Sentdate;
-                requestDetail.Status = 5;
+                
 
                 request.Status = requestDetail.Status;
                 _context.Requets.Update(request);
@@ -400,6 +428,8 @@ namespace DuAnTruongTim.Controllers
                 {
                     DateTimeFormat = "dd/MM/yyyy"
                 });
+                var idComplain = accountService.getAccountLogin();
+                request.IdComplain = idComplain.Id;
                 request.Sentdate = DateTime.Now;
                 bool result = requestService.createdRequest(request);
 
@@ -407,7 +437,7 @@ namespace DuAnTruongTim.Controllers
                 {
                     DateTimeFormat = "dd/MM/yyyy"
                 });
-
+                
                 requestDetail.IdRequest = request.Id;
                 requestDetail.Sentdate = request.Sentdate;
                 bool result_ = requestService.createdRequestDetail(requestDetail);
@@ -416,7 +446,7 @@ namespace DuAnTruongTim.Controllers
                 {
                     foreach (var file in files)
                    {
-                 var acc = accountService.getAccountLogin();
+                 
                         //    //// Xử lý tệp tin (file)
                         var fileName = GenerateRandomString(10);
                         fileName = Path.Combine(fileName+"_id="+requestDetail.Id + Path.GetExtension(file.FileName));

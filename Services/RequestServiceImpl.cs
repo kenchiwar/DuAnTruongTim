@@ -247,7 +247,7 @@ public class RequestServiceImpl : RequestService
               
 
             })
-        }).ToList<dynamic>();
+        }).ToList();
     }
 
     public dynamic getRequestById(int id)

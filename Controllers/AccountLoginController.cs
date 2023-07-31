@@ -1,4 +1,5 @@
-﻿using DuAnTruongTim.Models;
+﻿using DuAnTruongTim.Helpers;
+using DuAnTruongTim.Models;
 using DuAnTruongTim.Services;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -15,10 +16,16 @@ public class AccountLoginController : ControllerBase
         private readonly AccountService _accountService;
      private readonly CheckQlgiaoVuContext _context;
     private IWebHostEnvironment _webHostEnvironment;
-    public AccountLoginController(AccountService accountService,CheckQlgiaoVuContext context,IWebHostEnvironment webHostEnvironment)
+    private IConfiguration configuration;
+    public AccountLoginController(
+        AccountService accountService,
+        CheckQlgiaoVuContext context,
+        IWebHostEnvironment webHostEnvironment,
+        IConfiguration _configuration
+        )
     {
         _accountService = accountService;
-
+        configuration= _configuration;
         _context = context;
         _webHostEnvironment = webHostEnvironment;
     }
@@ -42,24 +49,33 @@ public class AccountLoginController : ControllerBase
         return Ok(account);
 
     }
+
+    [ValidateAntiForgeryToken]
     [HttpGet("sendChangPass/{username}")] 
      public async Task<ActionResult> sendChangPass(string username)
     {
-      var data =GenerateRandomString(6).ToLower();
+      
         try
         {
-
+            var data = GenerateRandomString(6).ToLower();
+            if(ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+            var mailHeper = new MailHelper(configuration);
+            mailHeper.Send(configuration["Gmail:Username"], username, "Notification", data);
+            return Ok(new
+            {
+                code = data
+            });
         }
         catch (Exception)
         {
-return NotFound();
+            return NotFound();
         }
         // var dataLogin = _accountService.getAccountLogin();
            // var data = this.HttpContext.Items["account"];
-       return Ok(new
-       {
-           code = data 
-       });
+       
 
     }
     [HttpGet("changePass/{username}/{password}")] 

@@ -27,11 +27,96 @@ public class DepartmentServiceImpl : DepartmentService
 
     public dynamic getAccDepartmentById(int id)
     {
-        return db.Accounts.Where(a => a.IdDepartment == id).Select(a => new { 
-            fullname = a.Fullname,
-            emailAddress = a.Emailaddress,
-            sex = a.Sex,
-            numberPhone = a.Phonenumber,
+        return db.Accounts.Where(a => a.IdDepartment == id).Select(account => new {
+            id = account.Id,
+            username = account.Username,
+            password = "",
+            idRole = account.IdRole,
+            idDepartment = account.IdDepartment,
+            fullname = account.Fullname,
+            emailaddress = account.Emailaddress,
+            phonenumber = account.Phonenumber,
+            address = account.Address,
+            citizenidentification = account.Citizenidentification,
+            dateofbirth = account.Dateofbirth,
+            sex = account.Sex,
+            status = account.Status,
+
+            Class = account.Class,
+            schoolyear = account.Schoolyear,
+            degree = account.Degree,
+            academicrank = account.Academicrank,
+            role = account.Role,
+            idDepartmentNavigation = new
+            {
+                account.IdDepartmentNavigation.Id,
+                account.IdDepartmentNavigation.TenDepartment,
+                account.IdDepartmentNavigation.Describe,
+                account.IdDepartmentNavigation.Address,
+                account.IdDepartmentNavigation.Status,
+            },
+            idRoleNavigation = new
+            {
+                account.IdRoleNavigation.Id,
+                account.IdRoleNavigation.Name,
+                account.IdRoleNavigation.Describe,
+            },
+            idRoleClaims = account.IdRoleClaims.Select(idRoleClaim => new
+            {
+                id = idRoleClaim.Id,
+                name = idRoleClaim.Name,
+                describe = idRoleClaim.Describe,
+                claim = idRoleClaim.Claim,
+            }),
+
+            requetIdComplainNavigations = account.RequetIdComplainNavigations.Select(requestComplainNavigation => new
+            {
+
+                id = requestComplainNavigation.Id,
+                idComplain = requestComplainNavigation.IdComplain,
+                idDepartment = requestComplainNavigation.IdDepartment,
+                idHandle = requestComplainNavigation.IdHandle,
+                title = requestComplainNavigation.Title,
+                status = requestComplainNavigation.Status,
+                level = requestComplainNavigation.Level,
+                sentDate = requestComplainNavigation.Sentdate,
+                endDate = requestComplainNavigation.Enddate,
+                priority = requestComplainNavigation.Priority,
+                idDepartmentNavigation = new
+                {
+                    requestComplainNavigation.IdDepartmentNavigation.Id,
+                    requestComplainNavigation.IdDepartmentNavigation.TenDepartment,
+                    requestComplainNavigation.IdDepartmentNavigation.Describe,
+                    requestComplainNavigation.IdDepartmentNavigation.Address,
+                    requestComplainNavigation.IdDepartmentNavigation.Status,
+
+                },
+
+
+            }),
+            requetIdHandleNavigations = account.RequetIdHandleNavigations.Select(requestHandleNavigation => new
+            {
+                id = requestHandleNavigation.Id,
+                idComplain = requestHandleNavigation.IdComplain,
+                idDepartment = requestHandleNavigation.IdDepartment,
+                idHandle = requestHandleNavigation.IdHandle,
+                title = requestHandleNavigation.Title,
+                status = requestHandleNavigation.Status,
+                level = requestHandleNavigation.Level,
+                sentDate = requestHandleNavigation.Sentdate,
+                endDate = requestHandleNavigation.Enddate,
+                priority = requestHandleNavigation.Priority,
+                idDepartmentNavigation = new
+                {
+                    requestHandleNavigation.IdDepartmentNavigation.Id,
+                    requestHandleNavigation.IdDepartmentNavigation.TenDepartment,
+                    requestHandleNavigation.IdDepartmentNavigation.Describe,
+                    requestHandleNavigation.IdDepartmentNavigation.Address,
+                    requestHandleNavigation.IdDepartmentNavigation.Status,
+
+                },
+
+            }),
         }).FirstOrDefault();
     }
 
