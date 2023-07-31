@@ -58,7 +58,14 @@ namespace DuAnTruongTim.Controllers
         public async Task<ActionResult<dynamic>> GetAccount(int id)
         {
             var accountLogin = _accountService.getAccountLogin();
-            
+            try
+            {
+
+            }
+            catch (Exception ex)
+            {
+
+            }
             //Kiêm tra coi đủ phầm quyền ko 
            if (!(accountLogin.IdRole<=2 || accountLogin.Id==id))    return Unauthorized();
             
@@ -77,10 +84,17 @@ namespace DuAnTruongTim.Controllers
         public async Task<ActionResult<dynamic>> GetAccountDetail(int id)
         {
             var accountLogin = _accountService.getAccountLogin();
+            try
+            {
+                if (!(accountLogin.IdRole <= 2 || accountLogin.Id == id)) return Unauthorized();
+            }
+            catch (Exception ex)
+            {
+
+            }
+               
             
-            //Kiêm tra coi đủ phầm quyền ko 
-           if (!(accountLogin.IdRole<=2|| accountLogin.Id==id))    return Unauthorized();
-            
+            //Kiêm tra coi đủ phầm quyền ko mmm      
 
             
            var account = await _accountService.GetAccountDetail(id);
@@ -140,7 +154,7 @@ namespace DuAnTruongTim.Controllers
                 ;databaseAccount.Degree = account.Degree
                     ;databaseAccount.Academicrank = account.Academicrank;
                     //Kiểm tra database account pass word thôi mà 
-                    if(account.Password!=null) databaseAccount.Password = BCrypt.Net.BCrypt.HashString(account.Password);
+                    if(account.Password!=null && account.Password != "") databaseAccount.Password = BCrypt.Net.BCrypt.HashString(account.Password);
                     
                     if (file != null)
                     {

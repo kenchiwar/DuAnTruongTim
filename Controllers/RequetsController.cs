@@ -149,7 +149,7 @@ namespace DuAnTruongTim.Controllers
                     return NotFound();
                 }
                 var idHandel = accountService.getAccountLogin();
-                if (idHandel != null)
+                if (idHandel == null)
                 {
                     return NotFound();
                 }
@@ -186,7 +186,7 @@ namespace DuAnTruongTim.Controllers
                     return NotFound();
                 }
                 var idHandel = accountService.getAccountLogin();
-                if(idHandel != null)
+                if(idHandel == null)
                 {
                     return NotFound();
                 }
