@@ -153,14 +153,7 @@ namespace DuAnTruongTim.Controllers
                 {
                     return NotFound();
                 }
-                if(request.IdComplainNavigation.Id == idHandel.Id)
-                {
-                    return NotFound("This is your request!");
-                }
-                if(request.IdHandle != null)
-                {
-                    return NotFound("Was Handel!");
-                }
+                
                 request.IdHandle = idHandel.Id;
                 request.Status = 1;
                 requestDetail.Status = request.Status;
@@ -198,10 +191,7 @@ namespace DuAnTruongTim.Controllers
                 {
                     return NotFound();
                 }
-                if (request.IdComplainNavigation.Id == idHandel.Id)
-                {
-                    return NotFound("This is your request!");
-                }
+                
                 request.Status = 1;
                 if (requestDetail.IdRequest != null)
                 {
@@ -246,10 +236,7 @@ namespace DuAnTruongTim.Controllers
                 {
                     return NotFound();
                 }
-                if (request.IdComplainNavigation.Id == idHandle.Id)
-                {
-                    return NotFound("This is your request!");
-                }
+                
                 request.Status = requestDetail.Status;
                 if(requestDetail.Status == 4)
                 {
