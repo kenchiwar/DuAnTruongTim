@@ -156,18 +156,88 @@ public class RequestServiceImpl : RequestService
         }).ToList();
     }
 
-    public dynamic getFileByIdDetail(int id)
+    public  dynamic getFileByIdDetail(int id)
     {
-        return db.Requetsdetaileds.Where(re => re.IdRequest == id).Select(request => new
-        {
-            id = request.Id,
-            sentDate = request.Sentdate,
-            payday = request.Payday,
-            reason = request.Reason,
-            status = request.Status,
-            reply = request.Reply,
-            idRequest = request.IdRequest
-        }).ToList();
+       var a =  db.Requets.Where(re => re.Id == id)
+         .Include(a => a.IdComplainNavigation)
+         .Include(a => a.IdDepartmentNavigation)
+         .Include(a => a.IdHandleNavigation)
+         .Include(a => a.RequestFiles)
+         .Include(a => a.Requetsdetaileds)
+         .Select(request => new
+         {
+             id = request.Id,
+             idComplain = request.IdComplain,
+             idDepartment = request.IdDepartment,
+             idHandle = request.IdHandle,
+             title = request.Title,
+             status = request.Status,
+             level = request.Level,
+             sentDate = request.Sentdate,
+             endDate = request.Enddate,
+             priority = request.Priority,
+             idComplainNavigation = new
+             {
+                 request.IdComplainNavigation.Id,
+                 request.IdComplainNavigation.Fullname,
+                 request.IdComplainNavigation.Username,
+                 citizenidentification= configuration["BaseUrl"] + request.IdComplainNavigation.Citizenidentification,
+             },
+             idDepartmentNavigation = new
+             {
+                 request.IdDepartmentNavigation.Id,
+                 request.IdDepartmentNavigation.TenDepartment,
+                 request.IdDepartmentNavigation.Describe,
+                 request.IdDepartmentNavigation.Address,
+                 request.IdDepartmentNavigation.Status,
+
+             },
+             idHandleNavigation = new
+             {
+                 request.IdComplainNavigation.Id,
+
+                 request.IdComplainNavigation.Fullname,
+
+
+                 request.IdComplainNavigation.Academicrank,
+                 request.IdComplainNavigation.Address,
+                 request.IdComplainNavigation.Citizenidentification,
+                 request.IdComplainNavigation.Class,
+                 request.IdComplainNavigation.Dateofbirth,
+                 request.IdComplainNavigation.Degree,
+                 request.IdComplainNavigation.Emailaddress,
+
+                 request.IdComplainNavigation.IdRole,
+                 request.IdComplainNavigation.Role,
+
+
+                 request.IdComplainNavigation.Phonenumber,
+                 request.IdComplainNavigation.Schoolyear,
+                 request.IdComplainNavigation.Status,
+                 request.IdComplainNavigation.Username
+             },
+             requestFiles = request.RequestFiles.Select(requestF => new
+             {
+                 id = requestF.Id,
+                 name = configuration["BaseUrl"] + "RequestFile/" + requestF.Name,
+                 idRequest = requestF.IdRequest,
+
+             }),
+             requestDetails = request.Requetsdetaileds.Select(requestDetail => new {
+                 id = requestDetail.Id,
+                 sentDate = requestDetail.Sentdate,
+                 payday = requestDetail.Payday,
+                 reason = requestDetail.Reason,
+                 status = requestDetail.Status,
+                 reply = requestDetail.Reply,
+                 idRequest = requestDetail.IdRequest,
+
+
+             })
+         }).FirstOrDefault();
+
+
+        return a;
     }
 
     public dynamic getRequest()
@@ -195,6 +265,7 @@ public class RequestServiceImpl : RequestService
                 request.IdComplainNavigation.Id,
                 request.IdComplainNavigation.Fullname,
                 request.IdComplainNavigation.Username,
+                request.IdComplainNavigation.Citizenidentification
             },
             idDepartmentNavigation = new
             {

@@ -163,10 +163,7 @@ namespace DuAnTruongTim.Controllers
                 }
                 request.IdHandle = idHandel.Id;
                 request.Status = 1;
-                if (requestDetail.IdRequest != null)
-                {
-                    requestDetail.Status = request.Status;
-                }
+                requestDetail.Status = request.Status;
                 // Cập nhật thông tin của đối tượng Request từ updatedRequest
                 _context.Requets.Update(request);
                 _context.Requetsdetaileds.Update(requestDetail);
@@ -428,8 +425,8 @@ namespace DuAnTruongTim.Controllers
                 {
                     DateTimeFormat = "dd/MM/yyyy"
                 });
-                var idComplain = accountService.getAccountLogin();
-                request.IdComplain = idComplain.Id;
+                var idComplain = accountService.getAccountLogin().Id;
+                request.IdComplain = idComplain;
                 request.Sentdate = DateTime.Now;
                 bool result = requestService.createdRequest(request);
 
@@ -483,6 +480,47 @@ namespace DuAnTruongTim.Controllers
             }
         }
 
+
+        [Consumes("multipart/form-data")]
+        [Produces("application/json")]
+        [HttpPost("createRequestNoAcc")]
+        public IActionResult CreateRequestNoAcc(string strRequest)
+        {
+            try
+            {
+                // Giải mã chuỗi JSON để lấy thông tin về yêu cầu (request)
+                var request = JsonConvert.DeserializeObject<Requet>(strRequest, new IsoDateTimeConverter
+                {
+                    DateTimeFormat = "dd/MM/yyyy"
+                });
+                request.Priority = 1;
+                //var idComplain = accountService.getAccountLogin();
+                //request.IdComplain = idComplain.Id;
+                request.Sentdate = DateTime.Now;
+                bool result = requestService.createdRequest(request);
+
+                var requestDetail = JsonConvert.DeserializeObject<Requetsdetailed>(strRequest, new IsoDateTimeConverter
+                {
+                    DateTimeFormat = "dd/MM/yyyy"
+                });
+
+                requestDetail.IdRequest = request.Id;
+                requestDetail.Sentdate = request.Sentdate;
+                bool result_ = requestService.createdRequestDetail(requestDetail);
+
+                return Ok(new
+                {
+                    result = result,
+                    result_ = result_
+                });
+            }
+            catch
+            {
+                return BadRequest("met ghe ");
+            }
+        }
+
+
         [HttpGet("requestFile/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -498,7 +536,7 @@ namespace DuAnTruongTim.Controllers
         {
             try
             {
-                return Ok(requestService.getDetailById(id));
+                return Ok(requestService.getFileByIdDetail(id));
             }
             catch { return BadRequest(); }
         }

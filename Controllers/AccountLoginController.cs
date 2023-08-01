@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace DuAnTruongTim.Controllers;
 [Route("api/[controller]")]
@@ -50,33 +51,45 @@ public class AccountLoginController : ControllerBase
 
     }
 
-    [ValidateAntiForgeryToken]
+
+    public string content(string content)
+    {
+        var content_ = "<div class=\"section-mail\">\r\n    <div class=\"box-mail\" style=\"max-width: 400px;\r\n    width: 100%;\r\n    background: #1c95fa;\r\n    text-align: center;\r\n    color: #000000;\r\n    padding: 50px 20px;\r\n    border-radius: 20px;\">\r\n        <div class=\"box-items\">\r\n            <div class=\"head\">\r\n\r\n                <h2 class=\"title\" style=\"font-size: 40px;\r\n                font-weight: 900;\">Notification</h2>\r\n            </div>\r\n            <div class=\"content\" style=\" background: #fff;\r\n            padding: 20px;\">\r\n                <h3>Vetify code</h3>\r\n                <div class=\"vetify-code\" style=\"display: block;\r\n                width: 50%;\r\n                margin: 0 auto;\r\n                font-size: 30px;\r\n                font-weight: 600;\">\r\n                    <p>"+content+"</p>\r\n                </div>\r\n            </div>\r\n            <div class=\"footer\">\r\n                <p class=\"name\" style=\"  font-size: 30px;\r\n                font-weight: 700;\r\n                color: #fff;\">TTTN University</p>\r\n                <div class=\"icon-social\" style=\"width: 100%;\r\n                display: flex;\r\n                justify-content: space-around;\">\r\n                    <a href=\"#\">\r\n                        <img src=\"https://cdn2.iconfinder.com/data/icons/social-media-2285/512/1_Facebook_colored_svg_copy-1024.png\" alt=\"\" style=\" width: 40px;\r\n                        height: 40px;\r\n                        filter: grayscale(1);\r\n                        transition: .3s;\">\r\n                    </a>\r\n                    <a href=\"#\">\r\n                        <img src=\"https://cdn2.iconfinder.com/data/icons/social-media-2285/512/1_Instagram_colored_svg_1-1024.png\" alt=\"\" style=\" width: 40px;\r\n                        height: 40px;\r\n                        filter: grayscale(1);\r\n                        transition: .3s;\">\r\n                    </a>\r\n                    <a href=\"#\">\r\n                        <img src=\"https://cdn2.iconfinder.com/data/icons/social-media-2285/512/1_Youtube_colored_svg-1024.png\" alt=\"\" style=\" width: 40px;\r\n                        height: 40px;\r\n                        filter: grayscale(1);\r\n                        transition: .3s;\">\r\n                    </a>\r\n                    <a href=\"#\">\r\n                        <img src=\"https://cdn2.iconfinder.com/data/icons/social-media-2285/512/1_Twitter3_colored_svg-1024.png\" alt=\"\" style=\" width: 40px;\r\n                        height: 40px;\r\n                       \r\n                        transition: .3s;\">\r\n                    </a>\r\n                </div>\r\n                <div class=\"copyright\">\r\n                    <p>Copyright © 2023 by TTTN-OHD. All rights reserved.</p>\r\n                </div>\r\n            </div>\r\n        </div>\r\n    </div>\r\n</div>";
+
+        return content_;
+    }
+
     [HttpGet("sendChangPass/{username}")] 
      public async Task<ActionResult> sendChangPass(string username)
     {
       
         try
         {
+
             var data = GenerateRandomString(6).ToLower();
-            if(ModelState.IsValid)
+
+            if (ModelState.IsValid)
             {
-                return BadRequest();
+
+                if (username != null)
+                {
+                    
+                    var content__ = content(data);
+                    var mailHelper = new MailHelper(configuration);
+                    mailHelper.Send(configuration["Gmail:Username"], username, "Notification", content__);
+                    return Ok(new { code = "Check your mail!" })
+;                }
+                ModelState.AddModelError("", "Deposit failed.");
             }
-            var mailHeper = new MailHelper(configuration);
-            mailHeper.Send(configuration["Gmail:Username"], username, "Notification", data);
-            return Ok(new
-            {
-                code = data
-            });
+            //var account1 = accountservice.getaccountbyid(id);
+            return Ok();
         }
         catch (Exception)
         {
-            return NotFound();
+return NotFound();
         }
         // var dataLogin = _accountService.getAccountLogin();
            // var data = this.HttpContext.Items["account"];
-       
-
     }
     [HttpGet("changePass/{username}/{password}")] 
      public async Task<ActionResult> changePass(string username ,string password)
