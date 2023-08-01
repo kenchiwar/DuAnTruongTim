@@ -28,7 +28,8 @@ public class AddAccountLoginMiddleware
            var account = await _accountService.login(username, password);
 
            if (account != null) httpContext.Items["account"] = JsonConvert.SerializeObject(account);
-          
+            var acc = account;
+           
           
         }
 

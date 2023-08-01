@@ -149,19 +149,20 @@ namespace DuAnTruongTim.Controllers
                     return NotFound();
                 }
                 var idHandel = accountService.getAccountLogin();
-                if (idHandel == null)
-                {
-                    return NotFound();
-                }
-                if(request.IdComplainNavigation.Id == idHandel.Id)
-                {
-                    return NotFound("This is your request!");
-                }
-                if(request.IdHandle != null)
-                {
-                    return NotFound("Was Handel!");
-                }
-                request.IdHandle = idHandel.Id;
+                //var b = requestDetail;
+                //if (idHandel == null)
+                //{
+                //    return NotFound();
+                //}
+                //if (request.IdComplainNavigation.Id == idHandel.Id)
+                //{
+                //    return NotFound("This is your request!");
+                //}
+                //if (request.IdHandle != null)
+                //{
+                //    return NotFound("Was Handel!");
+                //}
+                //request.IdHandle = idHandel.Id;
                 request.Status = 1;
                 requestDetail.Status = request.Status;
                 // Cập nhật thông tin của đối tượng Request từ updatedRequest
@@ -402,17 +403,6 @@ namespace DuAnTruongTim.Controllers
             catch { return BadRequest(); }
         }
 
-        [Produces("application/json")]
-        [HttpGet("getRequestDetailFile/{id}")]
-        public IActionResult GetRequestDetailFile(int id)
-        {
-            try
-            {
-                return Ok(requestService.getFileByIdDetail(id));
-            }
-            catch { return BadRequest(); }
-        }
-
         [Consumes("multipart/form-data")]
         [Produces("application/json")]
         [HttpPost("createRequestWithFile")]
@@ -481,45 +471,6 @@ namespace DuAnTruongTim.Controllers
         }
 
 
-        [Consumes("multipart/form-data")]
-        [Produces("application/json")]
-        [HttpPost("createRequestNoAcc")]
-        public IActionResult CreateRequestNoAcc(string strRequest)
-        {
-            try
-            {
-                // Giải mã chuỗi JSON để lấy thông tin về yêu cầu (request)
-                var request = JsonConvert.DeserializeObject<Requet>(strRequest, new IsoDateTimeConverter
-                {
-                    DateTimeFormat = "dd/MM/yyyy"
-                });
-                request.Priority = 1;
-                //var idComplain = accountService.getAccountLogin();
-                //request.IdComplain = idComplain.Id;
-                request.Sentdate = DateTime.Now;
-                bool result = requestService.createdRequest(request);
-
-                var requestDetail = JsonConvert.DeserializeObject<Requetsdetailed>(strRequest, new IsoDateTimeConverter
-                {
-                    DateTimeFormat = "dd/MM/yyyy"
-                });
-
-                requestDetail.IdRequest = request.Id;
-                requestDetail.Sentdate = request.Sentdate;
-                bool result_ = requestService.createdRequestDetail(requestDetail);
-
-                return Ok(new
-                {
-                    result = result,
-                    result_ = result_
-                });
-            }
-            catch
-            {
-                return BadRequest("met ghe ");
-            }
-        }
-
 
         [HttpGet("requestFile/{id}")]
         public async Task<IActionResult> GetById(int id)
@@ -536,7 +487,7 @@ namespace DuAnTruongTim.Controllers
         {
             try
             {
-                return Ok(requestService.getFileByIdDetail(id));
+                return Ok(requestService.getDetailById(id));
             }
             catch { return BadRequest(); }
         }
