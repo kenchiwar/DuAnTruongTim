@@ -43,99 +43,6 @@ namespace DuAnTruongTim.Controllers
             webHostEnvironment = _webHostEnvironment;
         }
 
-
-
-        //GET: api/Requets
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Requet>>> GetRequets()
-        {
-            if (_context.Requets == null)
-            {
-                return NotFound();
-            }
-            return await _context.Requets.ToListAsync();
-        }
-
-        [HttpGet("getRequestIndex")]
-        public async Task<ActionResult<IEnumerable<Requet>>> GetRequets_()
-        {
-            if (_context.Requets == null)
-            {
-                return NotFound();
-            }
-            return await _context.Requets.Where(re => re.IdHandle == null).ToListAsync();
-        }
-
-        [HttpGet("getRequestDetail")]
-        public async Task<ActionResult<IEnumerable<Requetsdetailed>>> GetRequetsDetail()
-        {
-            if (_context.Requetsdetaileds == null)
-            {
-                return NotFound();
-            }
-            return await _context.Requetsdetaileds.ToListAsync();
-        }
-
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<Requet>>> GetRequestFiles()
-        //{
-        //    var requestFiles = await _context.Requets.ToListAsync();
-        //    return Ok(requestFiles);
-        //}
-
-        // GET: api/Requets/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Requet>> GetRequet(int id)
-        {
-            if (_context.Requets == null)
-            {
-                return NotFound();
-            }
-            var requet = await _context.Requets.FindAsync(id);
-
-            if (requet == null)
-            {
-                return NotFound();
-            }
-
-            return requet;
-        }
-
-        // PUT: api/Requets/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        //[HttpPut("{id}")]
-        //public async Task<IActionResult> PutRequet(int id, Requet request)
-        //{
-        //    //var request = JsonConvert.DeserializeObject<Requet>(strRequest, new IsoDateTimeConverter
-        //    //{
-        //    //    DateTimeFormat = "dd/MM/yyyy"
-        //    //});
-        //    if (id != request.Id)
-        //    {
-        //        return BadRequest();
-        //    }
-
-        //    _context.Entry(request).State = EntityState.Modified;
-
-        //    try
-        //    {
-        //        await _context.SaveChangesAsync();
-        //    }
-        //    catch (DbUpdateConcurrencyException)
-        //    {
-        //        if (!RequetExists(id))
-        //        {
-        //            return NotFound();
-        //        }
-        //        else
-        //        {
-        //            throw;
-        //        }
-        //    }
-
-        //    return NoContent();
-        //}
-
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateRequest(int id, Requet strRequest, Requetsdetailed requestDetail_)
         {
@@ -149,20 +56,12 @@ namespace DuAnTruongTim.Controllers
                     return NotFound();
                 }
                 var idHandel = accountService.getAccountLogin();
-                //var b = requestDetail;
-                //if (idHandel == null)
-                //{
-                //    return NotFound();
-                //}
-                //if (request.IdComplainNavigation.Id == idHandel.Id)
-                //{
-                //    return NotFound("This is your request!");
-                //}
-                //if (request.IdHandle != null)
-                //{
-                //    return NotFound("Was Handel!");
-                //}
-                //request.IdHandle = idHandel.Id;
+                if (idHandel == null)
+                {
+                    return NotFound();
+                }
+                
+                request.IdHandle = idHandel.Id;
                 request.Status = 1;
                 requestDetail.Status = request.Status;
                 // Cập nhật thông tin của đối tượng Request từ updatedRequest
@@ -199,10 +98,7 @@ namespace DuAnTruongTim.Controllers
                 {
                     return NotFound();
                 }
-                if (request.IdComplainNavigation.Id == idHandel.Id)
-                {
-                    return NotFound("This is your request!");
-                }
+                
                 request.Status = 1;
                 if (requestDetail.IdRequest != null)
                 {
@@ -247,12 +143,9 @@ namespace DuAnTruongTim.Controllers
                 {
                     return NotFound();
                 }
-                if (request.IdComplainNavigation.Id == idHandle.Id)
-                {
-                    return NotFound("This is your request!");
-                }
+                
                 request.Status = requestDetail.Status;
-                if(requestDetail.Status == 4)
+                if(requestDetail.Status == 4 || requestDetail.Status == 3)
                 {
                     requestDetail.Payday = DateTime.Now;
                     request.Enddate = requestDetail.Payday;
@@ -289,8 +182,6 @@ namespace DuAnTruongTim.Controllers
                     return NotFound();
                 }
                 requestDetail.Sentdate = request.Sentdate;
-                
-
                 request.Status = requestDetail.Status;
                 _context.Requets.Update(request);
                 await _context.SaveChangesAsync();
@@ -403,6 +294,19 @@ namespace DuAnTruongTim.Controllers
             catch { return BadRequest(); }
         }
 
+        [Produces("application/json")]
+        [HttpGet("getRequestDetailById/{id}")]
+        public IActionResult GetRequestDetailById(int id)
+        {
+            try
+            {
+                return Ok(requestService.getRequestDetail(id));
+            }
+            catch { return BadRequest(); }
+        }
+
+
+        //Gui yeu cau cua nguoi dung
         [Consumes("multipart/form-data")]
         [Produces("application/json")]
         [HttpPost("createRequestWithFile")]
@@ -411,10 +315,7 @@ namespace DuAnTruongTim.Controllers
             try
             {
                 // Giải mã chuỗi JSON để lấy thông tin về yêu cầu (request)
-                var request = JsonConvert.DeserializeObject<Requet>(strRequest, new IsoDateTimeConverter
-                {
-                    DateTimeFormat = "dd/MM/yyyy"
-                });
+                var request = JsonConvert.DeserializeObject<Requet>(strRequest);
                 var idComplain = accountService.getAccountLogin().Id;
                 request.IdComplain = idComplain;
                 request.Sentdate = DateTime.Now;
@@ -426,6 +327,7 @@ namespace DuAnTruongTim.Controllers
                 });
                 
                 requestDetail.IdRequest = request.Id;
+                requestDetail.Status = request.Status;
                 requestDetail.Sentdate = request.Sentdate;
                 bool result_ = requestService.createdRequestDetail(requestDetail);
 
@@ -470,28 +372,7 @@ namespace DuAnTruongTim.Controllers
             }
         }
 
-
-
-        [HttpGet("requestFile/{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            try
-            {
-                return Ok(requestService.getFileById(id));
-            }
-            catch { return BadRequest(); }
-        }
-
-        [HttpGet("requestDetail/{id}")]
-        public async Task<IActionResult> GetRequestDetailById(int id)
-        {
-            try
-            {
-                return Ok(requestService.getDetailById(id));
-            }
-            catch { return BadRequest(); }
-        }
-
+        //tao chuoi ngau nhien
         public string GenerateRandomString(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

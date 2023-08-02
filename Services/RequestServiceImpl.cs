@@ -17,6 +17,7 @@ public class RequestServiceImpl : RequestService
         configuration = _configuration;
     }
 
+    //created request
     public bool createdRequest(Requet request)
     {
         try
@@ -28,6 +29,7 @@ public class RequestServiceImpl : RequestService
         catch { return false; }
     }
 
+    //created request detail
     public bool createdRequestDetail(Requetsdetailed requestDetail)
     {
         try
@@ -38,10 +40,11 @@ public class RequestServiceImpl : RequestService
         catch { return false; }
     }
 
-    public async Task<dynamic> getAllRequest()
+    //select all request
+    public dynamic getRequest()
     {
-        return await db.Requets.Select(request => new
-        {
+        return db.Requets.Select(request => new
+         {
             id = request.Id,
             idComplain = request.IdComplain,
             idDepartment = request.IdDepartment,
@@ -52,58 +55,51 @@ public class RequestServiceImpl : RequestService
             sentDate = request.Sentdate,
             endDate = request.Enddate,
             priority = request.Priority,
-           idComplainNavigation = new {
-               request.IdComplainNavigation.Id,
-               request.IdComplainNavigation.IdDepartment,
-               request.IdComplainNavigation.Sex,
-               request.IdComplainNavigation.Fullname,
-               request.IdComplainNavigation.RequetIdHandleNavigations,
-               request.IdComplainNavigation.RequetIdComplainNavigations,
-               request.IdComplainNavigation.IdDepartmentNavigation,
-               request.IdComplainNavigation.Academicrank,
-               request.IdComplainNavigation.Address,
-               request.IdComplainNavigation.Citizenidentification,
-               request.IdComplainNavigation.Class,
-               request.IdComplainNavigation.Dateofbirth,
-               request.IdComplainNavigation.Degree,
-               request.IdComplainNavigation.Emailaddress,
-               request.IdComplainNavigation.IdRoleNavigation,
-               request.IdComplainNavigation.IdRole,
-               request.IdComplainNavigation.Role,
-               request.IdComplainNavigation.IdRoleClaims,
-               request.IdComplainNavigation.Password,
-               request.IdComplainNavigation.Phonenumber,
-               request.IdComplainNavigation.Schoolyear,
-               request.IdComplainNavigation.Status,
-               request.IdComplainNavigation.Username
-           },
-            idDepartmentNavigation = new {
+            idComplainNavigation = new
+            {
+                request.IdComplainNavigation.Id,
+                request.IdComplainNavigation.IdDepartment,
+                request.IdComplainNavigation.Sex,
+                request.IdComplainNavigation.Fullname,
+                request.IdComplainNavigation.Academicrank,
+                request.IdComplainNavigation.Address,
+                citizenidentification = configuration["BaseUrl"] + request.IdComplainNavigation.Citizenidentification,
+                request.IdComplainNavigation.Class,
+                request.IdComplainNavigation.Dateofbirth,
+                request.IdComplainNavigation.Degree,
+                request.IdComplainNavigation.Emailaddress,
+                request.IdComplainNavigation.IdRole,
+                request.IdComplainNavigation.Role,
+                request.IdComplainNavigation.Password,
+                request.IdComplainNavigation.Phonenumber,
+                request.IdComplainNavigation.Schoolyear,
+                request.IdComplainNavigation.Status,
+                request.IdComplainNavigation.Username
+            },
+            idDepartmentNavigation = new
+            {
                 request.IdDepartmentNavigation.Id,
                 request.IdDepartmentNavigation.TenDepartment,
                 request.IdDepartmentNavigation.Describe,
                 request.IdDepartmentNavigation.Address,
                 request.IdDepartmentNavigation.Status,
-                
+
             },
-            idHandleNavigation = new {
+            idHandleNavigation = new
+            {
                 request.IdComplainNavigation.Id,
                 request.IdComplainNavigation.IdDepartment,
                 request.IdComplainNavigation.Sex,
                 request.IdComplainNavigation.Fullname,
-                request.IdComplainNavigation.RequetIdHandleNavigations,
-                request.IdComplainNavigation.RequetIdComplainNavigations,
-                request.IdComplainNavigation.IdDepartmentNavigation,
                 request.IdComplainNavigation.Academicrank,
                 request.IdComplainNavigation.Address,
-                request.IdComplainNavigation.Citizenidentification,
+                citizenidentification = configuration["BaseUrl"]+ request.IdComplainNavigation.Citizenidentification,
                 request.IdComplainNavigation.Class,
                 request.IdComplainNavigation.Dateofbirth,
                 request.IdComplainNavigation.Degree,
                 request.IdComplainNavigation.Emailaddress,
-                request.IdComplainNavigation.IdRoleNavigation,
                 request.IdComplainNavigation.IdRole,
                 request.IdComplainNavigation.Role,
-                request.IdComplainNavigation.IdRoleClaims,
                 request.IdComplainNavigation.Password,
                 request.IdComplainNavigation.Phonenumber,
                 request.IdComplainNavigation.Schoolyear,
@@ -113,9 +109,8 @@ public class RequestServiceImpl : RequestService
             requestFiles = request.RequestFiles.Select(requestF => new
             {
                 id = requestF.Id,
-                name = requestF.Name,
+                name = configuration["BaseUrl"] + "RequestFile/" + requestF.Name,
                 idRequest = requestF.IdRequest,
-                idRequestNavigation = requestF.IdRequestNavigation,
             }),
             requestDetails = request.Requetsdetaileds.Select(requestDetail => new {
                 id = requestDetail.Id,
@@ -125,126 +120,11 @@ public class RequestServiceImpl : RequestService
                 status = requestDetail.Status,
                 reply = requestDetail.Reply,
                 idRequest = requestDetail.IdRequest,
-                idRequestNavigation = requestDetail.IdRequestNavigation,
-                
             })
-        }).ToListAsync();
-    }
-
-    public dynamic getDetailById(int id)
-    {
-        return db.Requetsdetaileds.Where(re => re.IdRequest == id).Select(request => new
-        {
-            id = request.Id,
-            sentDate = request.Sentdate,
-            payday = request.Payday,
-            reason = request.Reason,
-            status = request.Status,
-            reply = request.Reply,
-            idRequest = request.IdRequest
-        }).FirstOrDefault();
-    }
-
-   
-
-    public dynamic getFileById(int id)
-    {
-        return db.RequestFiles.Where(idR => idR.IdRequest == id).Select(request => new
-        {
-            file = request.Name,
-            name = configuration["BaseUrl"] + "RequestFile/" + request.Name,
         }).ToList();
     }
 
-    public dynamic getFileByIdDetail(int id)
-    {
-        return db.Requetsdetaileds.Where(re => re.IdRequest == id).Select(request => new
-        {
-            id = request.Id,
-            sentDate = request.Sentdate,
-            payday = request.Payday,
-            reason = request.Reason,
-            status = request.Status,
-            reply = request.Reply,
-            idRequest = request.IdRequest
-        }).ToList();
-    }
-
-    public dynamic getRequest()
-    {
-        return db.Requets.Select(request => new
-         {
-             id = request.Id,
-             idComplain = request.IdComplain,
-             idDepartment = request.IdDepartment,
-             idHandle = request.IdHandle,
-             title = request.Title,
-             status = request.Status,
-             level = request.Level,
-             sentDate = request.Sentdate,
-             endDate = request.Enddate,
-             priority = request.Priority,
-             idComplainNavigation = new
-             {
-                 request.IdComplainNavigation.Id,
-                 request.IdComplainNavigation.Fullname,
-                 request.IdComplainNavigation.Username,
-                 citizenidentification = configuration["BaseUrl"] + request.IdComplainNavigation.Citizenidentification,
-             },
-             idDepartmentNavigation = new
-             {
-                 request.IdDepartmentNavigation.Id,
-                 request.IdDepartmentNavigation.TenDepartment,
-                 request.IdDepartmentNavigation.Describe,
-                 request.IdDepartmentNavigation.Address,
-                 request.IdDepartmentNavigation.Status,
-
-             },
-             idHandleNavigation = new
-             {
-                 request.IdComplainNavigation.Id,
-
-                 request.IdComplainNavigation.Fullname,
-
-
-                 request.IdComplainNavigation.Academicrank,
-                 request.IdComplainNavigation.Address,
-                 request.IdComplainNavigation.Citizenidentification,
-                 request.IdComplainNavigation.Class,
-                 request.IdComplainNavigation.Dateofbirth,
-                 request.IdComplainNavigation.Degree,
-                 request.IdComplainNavigation.Emailaddress,
-
-                 request.IdComplainNavigation.IdRole,
-                 request.IdComplainNavigation.Role,
-
-
-                 request.IdComplainNavigation.Phonenumber,
-                 request.IdComplainNavigation.Schoolyear,
-                 request.IdComplainNavigation.Status,
-                 request.IdComplainNavigation.Username
-             },
-             requestFiles = request.RequestFiles.Select(requestF => new
-             {
-                 id = requestF.Id,
-                 name = configuration["BaseUrl"] + "RequestFile/" + requestF.Name,
-                 idRequest = requestF.IdRequest,
-
-             }),
-             requestDetails = request.Requetsdetaileds.Select(requestDetail => new {
-                 id = requestDetail.Id,
-                 sentDate = requestDetail.Sentdate,
-                 payday = requestDetail.Payday,
-                 reason = requestDetail.Reason,
-                 status = requestDetail.Status,
-                 reply = requestDetail.Reply,
-                 idRequest = requestDetail.IdRequest,
-
-
-             })
-         }).ToList();
-    }
-
+    //select request by id
     public dynamic getRequestById(int id)
     {
         return db.Requets.Where(re => re.Id == id)
@@ -268,9 +148,23 @@ public class RequestServiceImpl : RequestService
              idComplainNavigation = new
              {
                  request.IdComplainNavigation.Id,
+                 request.IdComplainNavigation.IdDepartment,
+                 request.IdComplainNavigation.Sex,
                  request.IdComplainNavigation.Fullname,
-                 request.IdComplainNavigation.Username,
+                 request.IdComplainNavigation.Academicrank,
+                 request.IdComplainNavigation.Address,
                  citizenidentification = configuration["BaseUrl"] + request.IdComplainNavigation.Citizenidentification,
+                 request.IdComplainNavigation.Class,
+                 request.IdComplainNavigation.Dateofbirth,
+                 request.IdComplainNavigation.Degree,
+                 request.IdComplainNavigation.Emailaddress,
+                 request.IdComplainNavigation.IdRole,
+                 request.IdComplainNavigation.Role,
+                 request.IdComplainNavigation.Password,
+                 request.IdComplainNavigation.Phonenumber,
+                 request.IdComplainNavigation.Schoolyear,
+                 request.IdComplainNavigation.Status,
+                 request.IdComplainNavigation.Username
              },
              idDepartmentNavigation = new
              {
@@ -284,22 +178,19 @@ public class RequestServiceImpl : RequestService
              idHandleNavigation = new
              {
                  request.IdComplainNavigation.Id,
-
+                 request.IdComplainNavigation.IdDepartment,
+                 request.IdComplainNavigation.Sex,
                  request.IdComplainNavigation.Fullname,
-
-
                  request.IdComplainNavigation.Academicrank,
                  request.IdComplainNavigation.Address,
-                 request.IdComplainNavigation.Citizenidentification,
+                 citizenidentification = configuration["BaseUrl"] + request.IdComplainNavigation.Citizenidentification,
                  request.IdComplainNavigation.Class,
                  request.IdComplainNavigation.Dateofbirth,
                  request.IdComplainNavigation.Degree,
                  request.IdComplainNavigation.Emailaddress,
-
                  request.IdComplainNavigation.IdRole,
                  request.IdComplainNavigation.Role,
-
-
+                 request.IdComplainNavigation.Password,
                  request.IdComplainNavigation.Phonenumber,
                  request.IdComplainNavigation.Schoolyear,
                  request.IdComplainNavigation.Status,
@@ -310,7 +201,6 @@ public class RequestServiceImpl : RequestService
                  id = requestF.Id,
                  name = configuration["BaseUrl"] + "RequestFile/" + requestF.Name,
                  idRequest = requestF.IdRequest,
-
              }),
              requestDetails = request.Requetsdetaileds.Select(requestDetail => new {
                  id = requestDetail.Id,
@@ -320,15 +210,27 @@ public class RequestServiceImpl : RequestService
                  status = requestDetail.Status,
                  reply = requestDetail.Reply,
                  idRequest = requestDetail.IdRequest,
-
-
              })
          }).FirstOrDefault();
     }
 
+    public dynamic getRequestDetail(int id)
+    {
+        return db.Requetsdetaileds.Where(re => re.IdRequest == id).Select(requestDetail => new
+        {
+            id = requestDetail.Id,
+            sentDate = requestDetail.Sentdate,
+            payday = requestDetail.Payday,
+            reason = requestDetail.Reason,
+            status = requestDetail.Status,
+            reply = requestDetail.Reply,
+            idRequest = requestDetail.IdRequest,    
+         }).FirstOrDefault();
+    }
 
-   
 
+
+    //update request
     public bool updatedRequest(Requet request)
     {
         try
@@ -342,6 +244,7 @@ public class RequestServiceImpl : RequestService
         }
     }
 
+    //update request detail
     public bool updatedRequestDetail(Requetsdetailed requestDetail)
     {
         try
